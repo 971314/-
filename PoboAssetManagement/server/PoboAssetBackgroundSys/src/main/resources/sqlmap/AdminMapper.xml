@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pobo.dao.mapper.AdminMapper">
+    <select id="CheckPassword" parameterType="com.pobo.model.Admin" resultType="com.pobo.model.Admin">
+    	select * from t_admin where C_UserName=#{C_UserName} and C_Password=#{C_Password};
+    </select>
+    <update id="ChangePassword" parameterType="com.pobo.model.Admin">
+    	update t_admin set C_Password=#{NewPassword} where C_Id=#{C_Id} and C_Password=#{C_Password};
+    </update>
+</mapper>

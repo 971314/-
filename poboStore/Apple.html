@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Apple</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/new_file1.css">
+    <link rel="stylesheet" href="css/media.css">
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/url.js"></script>
+    <style>
+        #header{
+            width:100%;
+            height:0.35rem;
+            background:#277fc2;
+            text-align:center;
+            color:white;
+            line-height:0.35rem;
+            font-size:0.3rem;
+
+        }
+        #header span{
+            /*float:left;*/
+            /*padding-left:.9rem;*/
+        }
+        #content{
+            width:100%;
+            padding:.2rem .1rem;
+        }
+        #content li{
+            padding-top:.15rem;
+        }
+        #content p{
+            display:inline-block;
+            float:left;
+            width:28%;
+            text-align:center;
+        }
+        #content .pName{
+            width:43%;
+        }
+        .more{
+            display:inline-block;
+            margin-left:.8rem;
+        }
+        .aHover:hover{
+            color:#66bafa;
+        }
+        .hidden{
+            opacity: 0
+        }
+        @media screen and (min-width: 320px) {
+            .more{
+                display:inline-block;
+                margin-left:.3rem;
+            }
+        }
+        @media screen and (min-width: 375px) {
+            #header img{
+                float:left;
+                margin-left:.2rem;
+                margin-top:.05rem;
+            }
+        }
+        @media screen and (max-width: 375px) {
+            #header img{
+                float:left;
+                margin-left:.2rem;
+                margin-top:.02rem;
+            }
+        }
+        @media screen and (min-width: 556px) {
+            .more{
+                display:inline-block;
+                margin-left:.36rem;
+            }
+        }
+        @media screen and (min-width: 751px) {
+            .more{
+                display:inline-block;
+                margin-left:.47rem;
+            }
+        }
+        @media screen and (min-width: 755px) {
+            .more{
+                display:inline-block;
+                margin-left:.54rem;
+            }
+        }
+        @media screen and (min-width: 768px) {
+            ul li{
+                font-size:.2rem;
+            }
+            .more{
+                display:inline-block;
+                margin-left:.45rem;
+            }
+        }
+
+        @media screen and (min-width: 987px){
+            .more {
+                display: inline-block;
+                margin-left: .56rem;
+            }
+        }
+        @media screen and (min-width: 1000px){
+            .more {
+                display: inline-block;
+                margin-left: .6rem;
+            }
+        }
+        @media screen and (min-width: 1438px){
+            .more {
+                display: inline-block;
+                margin-left: 1rem;
+            }
+        }
+        @media screen and (min-width: 1440px){
+            .more {
+                display: inline-block;
+                margin-left: .95rem;
+            }
+        }
+        @media screen and (min-width: 1640px){
+            .more {
+                display: inline-block;
+                margin-left: 1.13rem;
+            }
+        }
+        @media screen and (min-width: 2560px){
+            .more {
+                display: inline-block;
+                margin-left: 1.76rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="header" class="clearfloat">
+    <img src="img/fanhui.png">
+    <span>Apple下载</span>
+</div>
+<div id="content">
+    <ul>
+        <li class="clearfloat">
+            <p>版本号</p>
+            <p class="pName">版本信息</p>
+            <p>下载次数</p>
+        </li>
+    </ul>
+</div>
+<script>
+    $(function () {
+        $("#header>img").click(function () {
+            history.back(-1);
+        });
+        //    获取id/name
+        GetQueryString = function (name) {
+            var urls = decodeURI(window.location.search.substr(1));
+            var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)');
+            var r = urls.match(reg);
+            if (r) return unescape(r[2]);
+            return null;
+        };
+        var contractID =GetQueryString('treeId');
+        //    后台动态添加应用
+        var dad={
+            "func": 2,
+            "data": JSON.stringify({
+                "treeId": contractID,
+                "type": "1"
+            })
+        };
+        $.ajax({
+            type:"POST",
+            url:url()[0],
+            crossDomain: true,
+            data:dad,
+            success:function (data) {
+                var arr=data.data;
+                var str="";
+                for(var i=0;i<arr.length;i++){
+                    str=str+'<li class="clearfloat U">'+'<a class="aHover" href="#" name="'+arr[i].id+'" ul="'+arr[i].path+'" onclick="conHerf(this)">'+ '<p>'+arr[i].version+'</p>'+'<p class="pName">'+
+                            arr[i].description+'</p>'+'<p>'+arr[i].count+"次"+' </p>'+'</a>'+'<input type="hidden" value="'+arr[i].id+'">'+ '</li>';
+                }
+                $("ul").append(str);
+                console.log(arr)
+            }
+        });
+    });
+//    上传次数
+function conHerf(_this) {
+    var iid=$(_this).attr('name');
+    var ul=$(_this).attr('ul');
+    var daa = {
+        "func": 3,
+        "data": JSON.stringify({
+            "id" : iid
+        })
+    };
+    $.ajax({
+        type:"POST",
+        url:url()[0],
+        crossDomain: true,
+        data:daa,
+        success:function (data) {
+            var arr=data.data;
+            console.log(data.retHead);
+        },
+        erroe:function (err) {
+            console.log("服务器异常")
+        }
+    });
+//    window.location.href=ul;
+    $(_this).attr('href',ul);
+    console.log($(_this).html())
+}
+</script>
+</body>
+</html>

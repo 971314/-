@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pobo.dao.mapper.CustomerMapper">
+    <select id="GetPageList" parameterType="com.pobo.model.CustomerQueryParameters" resultType="com.pobo.model.CustomerInfoShort">
+    	select a.C_Id as id,a.C_CustomerName as name,a.C_IdNum as idnum,a.C_AccountManager as manager,b.C_Name as riskevaluation
+,DATE_FORMAT(C_RegTime,'%Y-%m-%d')  as rtime,C_PhoneNum as phone
+,(select case when count(*)>0 then count else 0 end from v_bookingcount where customerid=a.C_Id and statusid=3) as bought
+,(select case when count(*)>0 then count else 0 end from v_bookingcount where customerid=a.C_Id and statusid=1) as unhandled
+,(select case when count(*)>0 then count else 0 end from v_bookingcount where customerid=a.C_Id and statusid=2) as handling
+from t_customer a,t_dictionary b where a.C_RiskEvaluation=b.C_Value and b.C_Pid=1  
+    	<if test="c_CustomerName != null">
+			<if test="c_CustomerName != ''">
+				and C_CustomerName like  CONCAT('%',#{c_CustomerName},'%' )   
+			</if>
+		</if>
+		<if test="c_PhoneNum != null">
+			<if test="c_PhoneNum != ''">
+				and (C_PhoneNum like  CONCAT('%',#{c_PhoneNum},'%' )  or C_LoginName  like CONCAT('%',#{c_PhoneNum},'%' ) ) 
+			</if>
+		</if>
+		<if test="c_RiskEvaluation != null">
+			<if test="c_RiskEvaluation != ''">
+				<if test="c_RiskEvaluation != 0">
+					and C_RiskEvaluation=#{c_RiskEvaluation} 
+				</if> 
+			</if>
+		</if>
+		order by 
+		<if test="orderField != null and orderField!='' and orderType != null and orderType!=''">
+			${orderField} ${orderType} 
+		</if>
+		<if test="orderField == null or orderField=='' or orderType == null or orderType==''">
+			C_RegTime desc
+		</if>
+		 limit #{currentPageIndex},#{rowsPerPage};
+    </select>
+    <select id="GetPageTotalCount" parameterType="com.pobo.model.CustomerQueryParameters" resultType="java.lang.Integer">
+    	select count(*) from t_customer where 1=1 
+    	<if test="c_CustomerName != null">
+			<if test="c_CustomerName != ''">
+				and C_CustomerName like  CONCAT('%',#{c_CustomerName},'%' )   
+			</if>
+		</if>
+		<if test="c_PhoneNum != null">
+			<if test="c_PhoneNum != ''">
+				and (C_PhoneNum like  CONCAT('%',#{c_PhoneNum},'%' )  or C_LoginName  like CONCAT('%',#{c_PhoneNum},'%' ) ) 
+			</if>
+		</if>
+		<if test="c_RiskEvaluation != null">
+			<if test="c_RiskEvaluation != ''">
+				<if test="c_RiskEvaluation != 0">
+					and C_RiskEvaluation=#{c_RiskEvaluation} 
+				</if> 
+			</if>
+		</if>
+		;
+    </select>
+    <update id="UpdateCustomerInfo" parameterType="java.util.HashMap">
+    	update t_customer set C_LastModifyTime=now()
+    	<if test="name != null">
+    			,C_CustomerName=#{name}
+    	</if>
+    	<if test="phone != null">
+    			,C_PhoneNum=#{phone}
+    	</if>
+    	<if test="idnum != null">
+    			,C_IdNum=#{idnum}
+    	</if>
+    	<if test="manager != null">
+    			,C_AccountManager=#{manager}
+    	</if>
+    	<if test="address != null">
+    			,C_Address=#{address}
+    	</if>
+    	<if test="remark != null">
+    			,C_Remark=#{remark}
+    	</if>
+    	 where C_Id=#{id};
+    </update>
+
+	<select id="GetCustomerInfo" parameterType="java.lang.String" resultType="com.pobo.model.CustomerInfo">
+	select a.C_Id as id,a.C_CustomerName as name,a.C_IdNum as idnum,a.C_AccountManager as manager,b.C_Name as riskevaluation
+,DATE_FORMAT(C_RegTime,'%Y-%m-%d')  as rtime,a.C_PhoneNum as phone,a.C_LoginName as mobile,a.C_Address as address,date_format(a.C_LastModifyTime,'%Y-%m-%d %T') as time,a.C_Remark as remark
+ from t_customer a,t_dictionary b where a.C_RiskEvaluation=b.C_Value and b.C_Pid=1 and a.C_Id=#{id};
+	</select>
+</mapper>

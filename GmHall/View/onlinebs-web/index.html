@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>网上营业厅</title>
+    <script type="text/javascript" src="../dist/lib/jquery-1.12.3.min.js"></script>
+</head>
+<body  class="bg">
+<!-- 模态框（Modal） -->
+<div class="modal fade modal-top" id="myModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title text-center" id="myModalLabel">
+                    提示
+                </h4>
+            </div>
+            <div class="modal-body modal-font">
+                您已在别处登录。如有问题，请致电4008888598！
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="outLoginInfo"
+                        data-dismiss="modal">关闭
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade modal-top" id="timeOutModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title text-center"  >
+                    提示
+                </h4>
+            </div>
+            <div class="modal-body modal-font">
+                长时间未操作已自动退出，请重新登陆！
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="timeOutClose"
+                        data-dismiss="modal">关闭
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="app">
+    <router-view></router-view>
+</div>
+<!--<script type="text/javascript" src="../dist/lib/placeholder.js"></script>-->
+<!--<script type="text/javascript" src="../dist/lib/browserInfo.js"></script>-->
+
+</body>
+<script>
+
+    $(function(){
+//        $('#passWord').keyboard();
+        if(navigator.appName == "Microsoft Internet Explorer" && navigator.appVersion .split(";")[1].replace(/[ ]/g,"")=="MSIE6.0" || navigator.appName == "Microsoft Internet Explorer" && navigator.appVersion .split(";")[1].replace(/[ ]/g,"")=="MSIE7.0" || navigator.appName == "Microsoft Internet Explorer" && navigator.appVersion .split(";")[1].replace(/[ ]/g,"")=="MSIE8.0" || navigator.appName == "Microsoft Internet Explorer" && navigator.appVersion .split(";")[1].replace(/[ ]/g,"")=="MSIE9.0")
+        {
+            $("#versionMsg").html("您的浏览器版本过低，登录后可能会导致部分功能使用，建议升级至10以上或者使用谷歌浏览器")
+        }
+    });
+</script>
+</html>

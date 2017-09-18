@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.com.pobo.dao.mapper.AdminMapper">
+    <!--配置一个resultMap 指定返回的类型 -->
+    <resultMap id="loginInfo" type="HashMap">
+        <id column="id" property="userId"/>
+    </resultMap>
+
+    <select id="checkAdminInfo" resultType="Integer">
+        SELECT org_number
+        FROM t_admin_info
+        WHERE user_id = #{userName} AND pwd = PASSWORD(#{password})
+    </select>
+
+    <insert id="insertAdmin">
+        INSERT INTO t_admin_info(user_id, pwd, created_date, org_number) VALUES (#{userName}, PASSWORD(#{password}), SYSDATE(), #{orgNumber})
+        <selectKey resultType="int" keyProperty="id">
+            SELECT LAST_INSERT_ID();
+        </selectKey>
+    </insert>
+</mapper>

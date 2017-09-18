@@ -1,0 +1,92 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+
+    <!-- 启动注解驱动的Spring MVC功能，注册请求url和注解POJO类方法的映射-->
+    <mvc:annotation-driven/>
+
+    <!-- 启动包扫描功能，以便注册带有@Controller、@Service、@repository、@Component等注解的类成为spring的bean -->
+    <context:component-scan base-package="com.test"/>
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!-- ContentNegotiatingViewResolver视图解析器,利用他就可以配置多种返回值 -->
+    <bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+        <!-- 根据URL中的文件扩展名确定MIME（如userList.xml,userList.json） -->
+        <property name="favorPathExtension" value="true" />
+        <!-- 则根据请求参数的值确定MIME类型，默认的请求参数是format，可以通过parameterName属性指定一个自定义的参数  -->
+        <property name="favorParameter" value="true" />
+        <!-- 则采用Accept请求报文头的值确定MIME类型。由于不同的浏览器产生的Accept头都是不一样的，所以一般不建议采用Accept确定MIME类型 -->
+        <property name="ignoreAcceptHeader" value="true" />
+        <property name="useJaf" value="false" />
+        <property name="defaultContentType" value="text/html" />
+        <property name="mediaTypes">
+            <map>
+                <!-- 告诉视图解析器，返回的类型为json格式 -->
+                <entry key="json" value="application/json" />
+                <entry key="xml" value="application/xml" />
+                <entry key="htm" value="text/htm"/>
+                <entry key="file" value="application/octet-stream"/>
+                <entry key="image" value="image/*"/>
+            </map>
+        </property>
+    </bean>
+
+
+
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="order" value="1" />
+        <property name="contentNegotiationManager" ref="contentNegotiationManager" />
+
+        <property name="viewResolvers">
+            <list>
+                <bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
+                <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                    <property name="prefix" value="/WEB-INF/pages/" />
+                    <property name="suffix" value=".jsp" />
+                    <property name="contentType" value="text/html; charset=UTF-8"/>
+                    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+                </bean>
+            </list>
+        </property>
+
+        <!-- 默认使用MappingJackson2JsonView生成jsonview-->
+        <property name="defaultViews">
+            <list>
+                <!-- for application/json -->
+                <bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+                    <property name="extractValueFromSingleKeyModel" value="true" />
+                    <property name="objectMapper">
+                        <bean class="com.fasterxml.jackson.databind.ObjectMapper">
+                            <property name="serializationInclusion">
+                                <value type="com.fasterxml.jackson.annotation.JsonInclude.Include">NON_NULL</value>
+                            </property>
+                        </bean>
+                    </property>
+                </bean>
+
+                <!-- xml视图，XStreamMarshaller，可以转换任何形式的java对象，需要添加xStream jar包 -->
+                <!--<bean class="org.springframework.web.servlet.view.xml.MarshallingView">-->
+                    <!--<property name="marshaller">-->
+                        <!--<bean class="org.springframework.oxm.xstream.XStreamMarshaller">-->
+                            <!--&lt;!&ndash;  启用annotation &ndash;&gt;-->
+                            <!--<property name="autodetectAnnotations" value="true"/>-->
+                            <!--&lt;!&ndash; streamDriver是配置驱动用的，默认可以不要驱动，你可以配置DomDriver、JSON相关的驱动。 &ndash;&gt;-->
+                            <!--<property name="streamDriver">-->
+                                <!--<bean class="com.thoughtworks.xstream.io.xml.StaxDriver"/>-->
+                            <!--</property>-->
+                        <!--</bean>-->
+                    <!--</property>-->
+                <!--</bean>-->
+            </list>
+        </property>
+    </bean>
+</beans>

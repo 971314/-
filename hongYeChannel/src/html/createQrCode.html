@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>二维码生成</title>
+    <!--<link href="../lib/bootstrap.min.css" rel="stylesheet"/>-->
+    <link href="../css/main.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="divBg">
+    <div class="width100">
+        <div class="leftDiv"><img class="hongYe" id="sysImg" src=""/></div>
+        <div class="rightDiv">
+            <p class="p1" id="username"></p>
+
+            <p class="p2" id="sysTitle"></p>
+        </div>
+    </div>
+    <div class="recommend bootm">
+        <span class="recommendOne">推荐码：</span>
+        <span class="recommendTwo" id="recode"></span>
+    </div>
+    <div class="recommend bootmDiv">
+        <img id="imgTwoQr" src="" class="qrCodeImg">
+    </div>
+    <div class="recommend">
+        <span class="qrCodeTip">扫一扫二维码，推荐开户</span>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../lib/jquery-2.2.0.min.js"></script>
+<script type="text/javascript" src="../downConfig.js"></script>
+<script type="text/javascript" src="../js/config.js"></script>
+<script>
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg); //匹配目标参数
+        if (r != null) return decodeURIComponent(r[2]);
+        return null; //返回参数值
+    }
+
+    var userName = unescape(getUrlParam("userName"));
+    var reCode = getUrlParam("channelID");
+    var twoQr;
+
+    $.ajax({
+        url: serverIP + channelUrl,
+        type: 'POST',
+        data: JSON.stringify({
+            func: fetchTwoQr,
+            data: {
+                length: twoQrSize,
+                url: serverIP + shareUrl + reCode
+            }
+        }),
+        contentType: 'application/json',
+        crossDomain: true,
+        success: function (data) {
+            if (data.retHead == 0) {
+                $("#imgTwoQr").attr("src", "data:image/jpg;base64," + data.data);
+            }
+        }, error: function (data) {
+            console.log("服务器异常！")
+        }
+    })
+
+    $("#recode").html(reCode);
+    $("#username").html(userName);
+
+    //console.log(twoQr);
+    $("#sysTitle").html(companyName);
+    $("#sysImg").attr("src", "../images/" + logoImg);
+</script>
+</html>

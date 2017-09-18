@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pobo.dao.mapper.LoggerMapper">
+    <insert id="WriteLog" parameterType="com.pobo.model.OperationLog">
+    	insert into t_operation_log (C_LogContent,C_LogType
+    	<if test="c_AdminId!=null">
+    		<if test="c_AdminId!=''">
+    			,C_AdminId
+    		</if>
+    	</if>
+    	<if test="c_CustomerId!=null">
+    		<if test="c_CustomerId!=''">
+    			,C_CustomerId
+    		</if>
+    	</if>
+    	<if test="c_ProductId!=null">
+    		<if test="c_ProductId!=''">
+    			,C_ProductId
+    		</if>
+    	</if>
+    	<if test="c_BookingId!=null">
+    		<if test="c_BookingId!=''">
+    			,C_BookingId
+    		</if>
+    	</if>
+    	<if test="c_IP!=null">
+    		<if test="c_IP!=''">
+    			,C_IP
+    		</if>
+    	</if>
+    	<if test="c_LogTime!=null">
+    		<if test="c_LogTime!=''">
+    			,C_LogTime
+    		</if>
+    	</if>
+    	<if test="c_LogHash!=null">
+    		<if test="c_LogHash!=''">
+    			,C_LogHash
+    		</if>
+    	</if>
+    	) values (#{c_LogContent},#{c_LogType}
+    	<if test="c_AdminId!=null">
+    		<if test="c_AdminId!=''">
+    			,#{c_AdminId}
+    		</if>
+    	</if>
+    	<if test="c_CustomerId!=null">
+    		<if test="c_CustomerId!=''">
+    			,#{c_CustomerId}
+    		</if>
+    	</if>
+    	<if test="c_ProductId!=null">
+    		<if test="c_ProductId!=''">
+    			,#{c_ProductId}
+    		</if>
+    	</if>
+    	<if test="c_BookingId!=null">
+    		<if test="c_BookingId!=''">
+    			,#{c_BookingId}
+    		</if>
+    	</if>
+    	<if test="c_IP!=null">
+    		<if test="c_IP!=''">
+    			,#{c_IP}
+    		</if>
+    	</if>
+    	<if test="c_LogTime!=null">
+    		<if test="c_LogTime!=''">
+    			,#{c_LogTime}
+    		</if>
+    	</if>
+    	<if test="c_LogHash!=null">
+    		<if test="c_LogHash!=''">
+    			,#{c_LogHash}
+    		</if>
+    	</if>
+    	);
+    </insert>
+    <!-- String customerid;
+	String productid;
+	String bookingid;
+	String adminid; -->
+    <select id="GetLog" parameterType="com.pobo.model.LogParameters" resultType="com.pobo.model.GetOpetationLog">
+    	SELECT * FROM v_operationlog where type=#{logtype}
+    	<if test="customerid!=null">
+    		<if test="customerid!=''">
+    			and customerid=#{customerid}
+    		</if>
+    	</if>
+    	<if test="productid!=null">
+    		<if test="productid!=''">
+    			and productid=#{productid}
+    		</if>
+    	</if>
+    	<if test="bookingid!=null">
+    		<if test="bookingid!=''">
+    			and bookingid=#{bookingid}
+    		</if>
+    	</if>
+    	<if test="adminid!=null">
+    		<if test="adminid!=''">
+    			and adminid=#{adminid}
+    		</if>
+    	</if>
+    </select>
+</mapper>

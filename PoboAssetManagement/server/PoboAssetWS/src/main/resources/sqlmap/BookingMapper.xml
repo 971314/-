@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pobo.dao.mapper.IBookingMapper">
+    <!--配置一个resultMap 指定返回的类型 -->
+
+    <select id="queryBookingInfo" resultType="map">
+        SELECT A.C_ProductId AS productid, C_ProductName AS productname, DATE_FORMAT(C_BookingTime,'%Y-%m-%d %H:%i:%S') AS bookingtime
+        FROM
+        (
+            SELECT *
+            FROM t_booking_info
+            WHERE C_CustomerId = (SELECT C_Id FROM t_customer WHERE C_LoginName = #{loginname} AND C_OrgId = #{orgid})
+            AND C_Status IN (#{status})
+            <if test="todate != null and todate != ''">
+                AND DATE(C_BookingTime) &lt;= DATE(#{todate})
+            </if>
+            <if test="fromdate != null and fromdate != ''">
+                AND DATE(C_BookingTime) &gt;= DATE(#{fromdate})
+            </if>
+        ) AS A
+        LEFT JOIN t_product_list AS B
+        ON A.C_ProductId = B.C_Id
+        ORDER BY C_BookingTime DESC
+    </select>
+
+    <insert id="insertBookingInfo" parameterType="com.pobo.entity.BookingInfo" useGeneratedKeys="true" keyProperty="bookingId">
+        INSERT INTO t_booking_info(C_CustomerId, C_ProductId, C_Status, C_Phone, C_BookingTime, C_LastModifyTime)
+        VALUES (
+          (SELECT C_Id FROM t_customer WHERE C_LoginName = #{loginName} AND C_OrgId = #{orgId}), #{productId}, 1,
+          <choose>
+              <when test="phone != null and phone != ''">
+                  #{phone}
+              </when>
+              <otherwise>
+                  #{loginName}
+              </otherwise>
+          </choose>
+          ,SYSDATE(), SYSDATE()
+        )
+    </insert>
+</mapper>

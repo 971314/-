@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pobo.dao.mapper.ICustomerMapper">
+    <!--配置一个resultMap 指定返回的类型 -->
+
+    <insert id="insertCustomerInfo" parameterType="com.pobo.entity.CustomerInfo" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_customer(C_LoginName, C_CustomerName, C_IdNum, C_RiskEvaluation, C_RegTime, C_OrgId)
+        VALUES (#{loginName}, #{name}, #{idNum}, #{riskLevel}, SYSDATE(), #{orgId})
+    </insert>
+
+    <!--<update id="updateRegisterStep">-->
+        <!--UPDATE t_customer SET C_RegisterStep = #{step}, C_LastModifyTime = SYSDATE()-->
+        <!--WHERE C_LoginName = #{loginname} AND C_OrgId = #{orgid};-->
+    <!--</update>-->
+
+    <!--<select id="queryRegisterStep" resultType="map">-->
+        <!--SELECT C_RegisterStep AS step-->
+        <!--FROM t_customer-->
+        <!--WHERE C_LoginName = #{loginname} AND C_OrgId = #{orgid};-->
+    <!--</select>-->
+
+    <update id="updateRiskLevel">
+        UPDATE t_customer SET C_RiskEvaluation = #{risklevel}, C_LastModifyTime = SYSDATE()
+        WHERE C_LoginName = #{loginname} AND C_OrgId = #{orgid};
+    </update>
+
+    <select id="queryRiskLevel" resultType="Integer">
+        SELECT C_RiskEvaluation
+        FROM t_customer
+        WHERE C_LoginName = #{loginname} AND C_OrgId = #{orgid};
+    </select>
+
+    <select id="queryCustomer" resultType="map">
+        SELECT C_CustomerName AS name, C_IdNum AS id, C_RiskEvaluation AS risklevel
+        FROM t_customer
+        WHERE C_LoginName = #{loginname} AND C_OrgId = #{orgid}
+    </select>
+</mapper>

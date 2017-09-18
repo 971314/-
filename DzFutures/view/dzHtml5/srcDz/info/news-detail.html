@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>新闻资讯</title>
+    <link href="../libs/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/common.css" rel="stylesheet">
+    <style>
+      .news {
+        margin-top: 10px;
+      }
+      .news h4 {
+        font-size: 16px;
+      }
+      .info {
+        margin-left: -8px;
+        margin-right: -8px;
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-bottom: 5px;
+        font-size: 12px;
+        color: lightgray;
+        border-bottom: 1px solid #e4e7f0;
+      }
+      .time {
+        margin-left: 10px;
+      }
+      .content {
+        border: none;
+        background-color: transparent;
+        font-size: 14px;
+        line-height: 24px;
+        overflow-wrap: break-word;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a href="goBack" class="navbar-brand">
+            <img src="../images/goback.png" alt="返回">
+          </a>
+        </div>
+        <p class="navbar-text">详细信息</p>
+      </div>
+    </nav>
+    <div class="container-fluid">
+      <div class="clearfix">
+        <div class="news">
+          <h4 class="title"></h4>
+          <p class="info">来源：&nbsp;<span class="provider"></span><span class="time"></span></p>
+          <p class="content"></p>
+        </div>
+      </div>
+    </div>
+    <script src="../libs/jquery-2.2.0.min.js"></script>
+    <script>
+      /**
+       * 获取url参数
+       * @param name 参数名
+       * @returns 参数值
+       */
+      function GetQueryString(name)
+      {
+        var reg = new RegExp('(^|&)'+ name +'=([^&]*)(&|$)');
+        var r = window.location.search.substr(1).match(reg);
+        if(r)return unescape(r[2]); return null;
+      }
+
+      var newsId = GetQueryString('newsId');
+
+      function callback(message) {
+        message = message.replace(/\n/g, '<br>');
+        message = message.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+        message = message.replace(/\s/g, '&nbsp;');
+        var msg = JSON.parse(message);
+        var newsDetail = msg.jData.News;
+        $('.title').html(newsDetail.Title);
+        $('.time').html(newsDetail.Pubtime);
+        $('.provider').html(newsDetail.Source);
+        $('.content').html(newsDetail.Text);
+      }
+
+      var data = {doc: 'json', newsId: newsId, type: 'mu'};
+      pbEngine.queryInfoDetailWithJson(JSON.stringify(data));
+    </script>
+  </body>
+</html>

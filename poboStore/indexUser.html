@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>pobo应用商店-管理</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/new_file1.css">
+    <link rel="stylesheet" href="css/media.css">
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/url.js"></script>
+    <style>
+        #header {
+            width: 100%;
+            height: 0.35rem;
+            background: #277fc2;
+            text-align: center;
+            color: white;
+            line-height: 0.35rem;
+            font-size: 0.3rem;
+        }
+
+        .home {
+            color: white;
+            font-size: .18rem;
+            position: absolute;
+            left: .1rem;
+            display: none;
+        }
+
+        .text {
+            width: 100%;
+            height: .33rem;
+            font-size: .15rem;
+            text-align: center;
+            outline-color: #d9f3ff;
+            display: none;
+        }
+
+        #accordion {
+            width: 98%;
+            margin: 0.06rem auto;
+            padding: 0.067rem;
+            /*height:4rem;*/
+            margin-bottom: 37px;
+        }
+
+        .oc {
+            background-color: rgb(211, 211, 211);
+            margin: 0.04rem 0 0 0;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.2rem;
+            font-weight: normal;
+            color: #666;
+            padding: 0.067rem;
+            border: 1px solid #bbb;
+        }
+
+        .h3 {
+            background-color: rgb(167, 208, 239);
+        }
+
+        #accordion>h4 {
+            background-color: rgb(211, 211, 211);
+            margin: 0.04rem 0 0 0;
+            cursor: pointer;
+            font-size: 0.16rem;
+            font-weight: normal;
+            color: #666;
+            padding: 0.067rem;
+            border: 1px solid #bbb;
+        }
+
+        #accordion>div {
+            padding: 0.16rem 0.334rem;
+            font-size: 0.16rem;
+            overflow: auto;
+            display: none;
+        }
+
+        h3 {
+            text-align: center;
+        }
+
+        h4 {
+            text-align: center;
+        }
+
+        .app_li a {
+            display: inline-block;
+            float: left;
+        }
+
+        #foot {
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            text-align: center;
+        }
+
+        #foot span {
+            display: inline-block;
+            width: 10%;
+            height: 0.4rem;
+        }
+
+        #foot>span {
+            background: url("img/jiantou.png") no-repeat 0 0;
+        }
+
+        #foot>span:hover {
+            background: url("img/jiantou-1.png") no-repeat 0 0;
+        }
+
+        @media screen and (min-width: 320px) {
+            .app_li a {
+                line-height: 0.24rem;
+            }
+            #foot span {
+                display: inline-block;
+                width: 2%;
+                height: 0.4rem;
+                margin: 0 auto;
+            }
+        }
+
+        @media screen and (min-width: 320px) {
+            .app_li a {
+                font-size: 0.2rem;
+                line-height: 0.3rem;
+            }
+            #foot span {
+                display: inline-block;
+                width: 2%;
+                height: 0.3rem;
+                margin: 0 auto;
+            }
+            #header>img {
+                float: left;
+                margin-left: .1rem;
+                margin-top: .03rem;
+            }
+        }
+
+        @media screen and (min-width: 375px) {
+            #header>img {
+                float: left;
+                margin-left: .1rem;
+                margin-top: .05rem;
+            }
+        }
+
+        @media screen and (min-width: 768px) {
+            #header>img {
+                float: left;
+                margin-left: .1rem;
+                margin-top: .09rem;
+            }
+        }
+
+        .repassword {
+            color: black;
+            float: right;
+            font-size: .12rem;
+            margin-right: .1rem;
+        }
+
+        .repassword:hover {
+            color: #e4e4e4;
+        }
+
+        #accordion>h4>span {
+            display: inline-block;
+            width: 10%;
+            height: .2rem;
+            line-height: .2rem;
+        }
+        .xiugai{
+            font-size:.15rem;
+            line-height: .2rem;
+            color:black;
+            float:right;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        <a href="indexUser.html" class="home">首页</a>
+        <img src="img/soso.png">
+        <span>pobo软件商店</span>
+    </div>
+    <div id="accordion" data-role="page">
+        <input type="text" class="text" placeholder="请输入要搜索的圈商">
+    </div>
+    <div id="foot">
+        <span class="add"></span>
+    </div>
+    <script>
+        $(function() {
+            //    获取id/name
+            GetQueryString  =   function (name)  {
+                var  urls  =  decodeURI(window.location.search.substr(1));
+                var  reg  =  new  RegExp('(^|&)'  +  name  +  '=([^&]*)(&|$)');
+                var  r  =  urls.match(reg);
+                if  (r)  return  unescape(r[2]);
+                return  null;
+            };
+            var toekn = GetQueryString('toekn');
+            var userId = GetQueryString('userId');
+            //        添加 提交 卷商
+            $(".add").click(function() {
+                $('<h4 ><span contenteditable="true"></span></h4>').insertAfter($("#accordion h3").last());
+                $("h4>span").focus()
+            });
+            //        添加修改密码
+            var a = "<a href='password.html?toekn=" + toekn + "&userId=" + userId + "' class='repassword'>修改密码</a>";
+            $("#header").append(a);
+            //        搜索框
+            var time = 0;
+            $("#header>img").click(function() {
+                if (time == 0) {
+                    $(".text").css({
+                        'display': 'block'
+                    });
+                    time++;
+                } else if (time <= 1) {
+                    $(".text").css({
+                        'display': 'none'
+                    });
+                    time--;
+                }
+            });
+            //        监听搜索框
+            $(".text").bind("input propertychange", function() {
+                var txt = $(this).val();
+                $("h3").hide();
+                $("#accordion>h3:eq(0)").next().hide();
+                $("h3:contains('" + txt + "')").not().css({
+                    'display': 'block',
+                    'background': '#a7d0ef'
+                });
+                if ($(".text").val() == '') {
+                    $("h3").css({
+                        'background': 'rgb(211,211,211)'
+                    })
+                }
+            });
+            //        添加圈商失去焦点时提交
+
+            $(document).on("blur", "#accordion>h4>span", function() {
+                if ($(this).text() == '') {
+                    alert("不能为空")
+                } else {
+                    var data = {
+                        "token": toekn,
+                        "userId": userId
+                    };
+                    var blur = {
+                        "func": 12
+                    };
+                    $(this).each(function(i, e) {
+                        $(e).removeAttr("contenteditable");
+                        var treeName = $(e).text();
+                        data.treeName = treeName;
+                        blur.data = JSON.stringify(data);
+                    });
+                    $.ajax({
+                        type: "POST",
+                        url: url()[1],
+                        crossDomain: true,
+                        data: blur,
+                        success: function(data) {
+                            console.log(data);
+                            var arr = data.data;
+                            var txt = $("#accordion>h4>span").text();
+                            if (data.retHead == 0) {
+                                if (arr[0].treedName != "") {
+                                    txt = arr.treedName;
+                                    $('<a class="xiugai" href="upload.html?treeId=' + arr[0].treedId + '&token=' + toekn + '&userId=' + userId + '">上传</a>').insertAfter($("#accordion>h4>span").last());
+                                } else {
+                                    txt = arr.treedName;
+                                }
+
+                            }
+                            if (data.retHead == -4) {
+                                txt = arr.treedName;
+                                alert('添加券商失败');
+                            }
+                        }
+                    });
+                }
+            });
+
+            //        双击圈商改变可编辑
+            $(document).on("click", "h3 span", function() {
+                console.log('0')
+                $(this).each(function(i, e) {
+                    $(e).attr("contenteditable", "true");
+                    $(e).focus();
+                });
+            });
+
+            //        动态获取后台卷商
+            var dad = {
+                "func": 1,
+                "data": JSON.stringify({
+                    "treeId": "0"
+                })
+            };
+            $.ajax({
+                type: "POST",
+                url: url()[0],
+                crossDomain: true,
+                data: dad,
+                success: function(data) {
+                    var arr = data.data;
+                    var str = "";
+                    for (var i = 0; i < arr.length; i++) {
+                        // str = str + '<h3 class="oc">' + '<a class="aWidth" href="upload.html?treeId=' +
+                        //     arr[i].treeId + '&token=' + toekn + '&userId=' + userId + '"><span>' + arr[i].treeName + '</span></a>' +
+                        //     '<input type="hidden" value="' + arr[i].treeId + '" name="' + arr[i].treeId + '">' + '</h3>';
+
+                        str = str + '<h3 class="oc">' +'<span>' + arr[i].treeName + '<input type="hidden" value="' + arr[i].treeId + '" name="' + arr[i].treeId + '"></span>'+ '<a class="xiugai" href="upload.html?treeId=' +
+                            arr[i].treeId + '&token=' + toekn + '&userId=' + userId + '">上传</a></h3>';
+                    }
+                    $("#accordion").append(str);
+                    $("#accordion h3").eq(0).css({
+                        'background': 'rgb(167, 208, 239)'
+                    });
+
+                },
+                erroe: function(err) {
+                    console.log("服务器异常")
+                }
+            });
+            //        点击当前圈商
+            $(document).on("click", "#accordion>h3", function() {
+                var s = $(this).text();
+                $("#header span").text(s);
+                $(this).css({
+                    'background': 'rgb(167, 208, 239)'
+                }).siblings('h3').removeAttr('style');
+            });
+            //        当卷商失去焦点时提交
+            var data = {
+                "token": toekn,
+                "userId": userId
+            };
+            var blur = {
+                "func": 13
+            };
+            $(document).on("blur", "#accordion>h3>span", function() {
+                $(this).each(function(i, e) {
+                    $(e).removeAttr("contenteditable");
+                    var treeName = $(e).text();
+                    var treeId = $(e).find('input').val();
+                    data.treeName = treeName;
+                    data.treeId = treeId;
+                    blur.data = JSON.stringify(data);
+                });
+                $.ajax({
+                    type: "POST",
+                    url: url()[1],
+                    crossDomain: true,
+                    data: blur,
+                    success: function(data) {
+                        var arr = data.data;
+                        var txt = $("#accordion>h3>a").text();
+                        if (data.retHead == 0) {
+                            txt = arr.treedName;
+                        }
+                        if (data.retHead == -5) {
+                            txt = arr.treedName;
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

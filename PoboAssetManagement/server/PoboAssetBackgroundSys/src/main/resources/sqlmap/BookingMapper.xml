@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pobo.dao.mapper.BookingMapper">
+    <select id="GetPageList" parameterType="com.pobo.model.BookingQueryParameters" resultType="com.pobo.model.BookingInfo" flushCache="true">
+    	select * from v_bookinginfo where 1=1
+    	<if test="c_CustomerName != null">
+			<if test="c_CustomerName != ''">
+				and cname like  CONCAT('%',#{c_CustomerName},'%' )   
+			</if>
+		</if>
+		<if test="c_PhoneNum != null">
+			<if test="c_PhoneNum != ''">
+				and (phone like  CONCAT('%',#{c_PhoneNum},'%' )  or mobile  like CONCAT('%',#{c_PhoneNum},'%' ) ) 
+			</if>
+		</if>
+		<if test="c_RiskLevel != null">
+			<if test="c_RiskLevel != ''">
+				<if test="c_RiskLevel != 0">
+					and risklevelid=#{c_RiskLevel} 
+				</if> 
+			</if>
+		</if>
+		<if test="c_Status != null">
+			<if test="c_Status != ''">
+				<if test="c_Status != 0">
+					and statusid=#{c_Status} 
+				</if> 
+			</if>
+		</if>
+		order by  
+		<choose>
+			<when test="orderField != null and orderField!='' and orderType != null and orderType!=''">
+				${orderField} ${orderType}
+			</when>
+			<otherwise>
+				btime desc
+			</otherwise>
+		</choose>
+		 limit #{currentPageIndex},#{rowsPerPage};
+    </select>
+    <select id="GetPageTotalCount" parameterType="com.pobo.model.BookingQueryParameters" resultType="java.lang.Integer">
+    	select count(*) from v_bookinginfo where 1=1
+    	<if test="c_CustomerName != null">
+			<if test="c_CustomerName != ''">
+				and cname like  CONCAT('%',#{c_CustomerName},'%' )   
+			</if>
+		</if>
+		<if test="c_PhoneNum != null">
+			<if test="c_PhoneNum != ''">
+				and (phone like  CONCAT('%',#{c_PhoneNum},'%' )  or mobile  like CONCAT('%',#{c_PhoneNum},'%' ) ) 
+			</if>
+		</if>
+		<if test="c_RiskLevel != null">
+			<if test="c_RiskLevel != ''">
+				<if test="c_RiskLevel != 0">
+					and risklevelid=#{c_RiskLevel} 
+				</if> 
+			</if>
+		</if>
+		<if test="c_Status != null">
+			<if test="c_Status != ''">
+				<if test="c_Status != 0">
+					and statusid=#{c_Status} 
+				</if> 
+			</if>
+		</if>
+		;
+    </select>
+    <update id="UpdateBookingStatus" parameterType="java.util.HashMap">
+    	update t_booking_info set C_Status=#{status}
+    	 where C_Id=#{id} and C_Status &lt; ${status};
+    </update>
+</mapper>

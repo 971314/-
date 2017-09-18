@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>双录队列管理</title>
+
+  <link href="lib/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/common.css" rel="stylesheet">
+  <link href="css/index.css" rel="stylesheet">
+  <link href="layui/css/layui.css" rel="stylesheet">
+  <style>
+    .bg-success {
+      padding: 10px;
+      font-size: 24px;
+      font-weight: bolder;
+    }
+  </style>
+
+  <!--[if lt IE 9]>
+    <script src="js/html5shiv.min.js"></script>
+    <script src="js/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body class="bgc-white">
+  <div class="login_container" style="display: block;">
+    <div class="login_header">
+      <p>欢迎<span>登录</span></p>
+      <p>Welcome to login</p>
+    </div>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <div class="col-xs-12">
+          <input id="name" class="form-control" type="text" value="" placeholder="用户名">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-xs-12">
+          <input id="pwd" class="form-control" type="password" value="" placeholder="密码">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-xs-12">
+          <input id="login_btn" class="btn btn-block btn-primary" type="button" value="登&nbsp;&nbsp;&nbsp;录">
+        </div>
+      </div>
+    </form>
+    <div class="login_footer">
+      上海澎博提供技术&nbsp;&nbsp;&nbsp;© 2017
+    </div>
+  </div>
+  <div class="container">
+    <div class="que_container" style="display: none;">
+      <nav aria-label="...">
+        <ul class="pager">
+          <li><a href="javascript:void(0);" onclick="init()">初始化</a></li>
+          <!-- <li><a href="javascript:void(0);" onclick="pageup()">上一页</a></li> -->
+          <!-- <li><a href="javascript:void(0);" onclick="pagedown()">下一页</a></li> -->
+          <li><a href="javascript:void(0);" onclick="more()">更多</a></li>
+          <li><a href="javascript:void(0);" onclick="add()">新增</a></li>
+          <li><a href="javascript:void(0);" onclick="queryStatus()">查询状态</a></li>
+          <li><a href="javascript:void(0);" onclick="synchronization()">同步队列</a></li>
+          <li class="pull-right"><a href="javascript:void(0);" onclick="logout()">注销</a></li>
+        </ul>
+      </nav>
+      <p class="bg-success">暂无数据</p>
+      <div class="table-responsive" style="max-height: 770px; overflow-y: auto;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>队列名称</th>
+              <th>优先级</th>
+              <th>队列描述</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+
+          </tbody>
+        </table>
+      </div>
+      <div class="modal fade" id="editQueueModal" tabindex="-1" role="dialog" aria-labelledby="editQueueModalLabel">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="editQueueModalLabel">修改队列</h4>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="form-group">
+                  <label for="recipient-name" class="control-label">队列名称</label>
+                  <input type="text" class="form-control" id="queueName" placeholder="营业部名称">
+                </div>
+                <div class="form-group">
+                  <label for="message-text" class="control-label">队列优先级</label>
+                  <input type="text" class="form-control" id="priority" placeholder="队列优先级，数字越小优先级越大，越早接到客户">
+                </div>
+                <div class="form-group">
+                  <label for="message-text" class="control-label">队列描述</label>
+                  <input type="text" class="form-control" id="queDesc" placeholder="营业部ID">
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+              <button id="submitQueue" type="button" class="btn btn-primary">提交</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="lib/js/jquery.min.js"></script>
+  <script src="lib/js/bootstrap.min.js"></script>
+  <script src="layui/layui.js"></script>
+  <script src="js/conf.js"></script>
+  <script>
+    var jgid = videoConf.institution;
+    var videoApiAddr = videoConf.videoApiAddr.substring(0, videoConf.videoApiAddr.length - 13);
+    var crmApiAddr = videoConf.crmServerAddr;
+    var currentStartIndex = 1;
+    var nomore = false;
+    var addFlag = false;
+    var currentQueueID;
+    var currentQueueName;
+    var currentPriority;
+    var currentQueDesc;
+    var allQueueInfo = [];
+    var addQueueInfo = [];
+    var totalJg = 0;
+    var totalAgentNum = 0;
+    var totalSrvNum = 0;
+    var totalWaitNum = 0;
+    var totalPrepareNum = 0;
+    var totalNum = 0;
+    var querySingle = false;
+    var g_is_synchronization = false;
+
+    $('#editQueueModal').on('show.bs.modal', function (event) {
+      var modal = $(this);
+      modal.find('.modal-body #queueName').val(currentQueueName);
+      modal.find('.modal-body #priority').val(currentPriority);
+      modal.find('.modal-body #queDesc').val(currentQueDesc);
+    });
+    function queryStatus() {
+      totalJg = 0;
+      totalAgentNum = 0;
+      totalSrvNum = 0;
+      totalWaitNum = 0;
+      totalPrepareNum = 0;
+      totalNum = 0;
+      if (allQueueInfo.length > 0) {
+        $('.bg-success').text('查询中。。。');
+      }
+      for (var i = 0, l = allQueueInfo.length; i < l; i++) {
+        getQueueInfo(allQueueInfo[i].QueueID);
+      }
+    }
+    function deleteAll() {
+      if (confirm('确定删除本页所有队列？')) {
+        for (var i = 0; i < allQueueInfo.length; i++) {
+          deleteQueue(allQueueInfo[i].QueueID, true);
+        }
+      }
+    }
+    function synchronizationCallback(result) {
+      if (result.RspCode == 0) {
+        console.log('增加成功');
+      } else {
+        console.error(result.RspDesc);
+      }
+    }
+    function synchronization() {
+      if (g_is_synchronization) {
+        alert('正在同步中，请勿重复操作');
+        return;
+      }
+      g_is_synchronization = true;
+      addQueueInfo = [];
+      if (!nomore) {
+        alert('请先获取全部队列，否则不能同期化');
+        return;
+      }
+      if (confirm('确定同步所有队列吗？')) {
+        var data = {
+          'func': 2023,
+          'type': 2,
+          'account':'',
+          'token':'',
+          'data': [{
+            'service': 'adequacy.118',
+            'json': '{}',
+          }]
+        };
+        function addQueue(name, queDesc) {
+          var params = {
+            RequestId: new Date().getTime() + '',
+            UserName: 'demo@cloudroom.com',
+            UserPswd: 'e10adc3949ba59abbe56e057f20f883e',
+            QueueName: name,
+            Priority: 1,
+            QueDesc: queDesc,
+            _doaction_: 'get',
+            _callback_: 'synchronizationCallback'
+          };
+          $.ajax({
+            url: videoApiAddr + 'addQueueAPI',
+            data: params,
+            dataType: 'jsonp',
+            async: false,
+            success: function (result) {}
+          });
+        }
+        $.ajax({
+          type: 'post',
+          url: crmApiAddr,
+          contentType: 'application/json;charset=utf-8',
+          data: JSON.stringify(data),
+          dataType: 'json',
+          xhrFields: { withCredentials: true },
+          crossDomain: true,
+          success: function (result) {
+            if (result.retHead == 1) {
+              var departmentList = JSON.parse(result.data["0"].proxyresult).body.result;
+              if (departmentList.length > 0) {
+                if (allQueueInfo.length > 0) {
+                  for (var i = 0, l = departmentList.length; i < l; i++) {
+                    var has = false;
+                    for (var ii = 0, ll = allQueueInfo.length; ii < ll; ii++) {
+                      var department = allQueueInfo[ii].QueDesc.split('-')[1];
+                      if (department == departmentList[i].DEPARTMENT_ID) {
+                        has = true;
+                      }
+                    }
+                    if (!has) {
+                      addQueueInfo.push({ name: departmentList[i].DEPARTMENT_NAM, desc: jgid + '-' + departmentList[i].DEPARTMENT_ID });
+                    }
+                  }
+                } else {
+                  for (var i = 0, l = departmentList.length; i < l; i++) {
+                    addQueueInfo.push({ name: departmentList[i].DEPARTMENT_NAM, desc: jgid + '-' + departmentList[i].DEPARTMENT_ID });
+                  }
+                }
+              } else {
+                alert('没有可同步的营业部');
+              }
+              for (var i = 0; i < addQueueInfo.length; i++) {
+                allQueueInfo.push({ QueDesc: addQueueInfo[i].desc });
+                addQueue(addQueueInfo[i].name, addQueueInfo[i].desc);
+                //延迟1.5秒执行下一次循环，以免同步时出错
+                var start_time = new Date().getTime();
+                while ((start_time + 1500) > new Date().getTime()) { }
+              }
+              g_is_synchronization = false;
+            } else {
+              alert('同期化失败，请稍后重试');
+            }
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.error(jqXHR);
+          }
+        });
+      }
+    }
+    function getQueueInfoCallback(result) {
+      var que_info = result.Data.queueList[0];
+      if (que_info.AgentNum > 0) {
+        totalJg += 1;
+      }
+      totalAgentNum += que_info.AgentNum;
+      totalSrvNum += que_info.SrvNum;
+      totalWaitNum += que_info.WaitNum;
+      totalPrepareNum += que_info.PrepareNum;
+      totalNum += 1;
+      if (totalNum == allQueueInfo.length) {
+        totalNum = 0;
+        $('.bg-success').text(`营业部数：${totalJg}，坐席数：${totalAgentNum}，正在服务人数：${totalSrvNum}，等待服务人数：${totalWaitNum}，准备服务人数：${totalPrepareNum}`);
+      }
+      if (querySingle) {
+        querySingle = false;
+        $('.bg-success').text(`坐席数：${totalAgentNum}，正在服务人数：${totalSrvNum}，等待服务人数：${totalWaitNum}，准备服务人数：${totalPrepareNum}`);
+      }
+    }
+    function getQueueInfo(queueId) {
+      var params = {
+        RequestId: new Date().getTime() + '',
+        UserName: 'demo@cloudroom.com',
+        UserPswd: 'e10adc3949ba59abbe56e057f20f883e',
+        QueueID: queueId,
+        _doaction_: 'get',
+        _callback_: 'getQueueInfoCallback'
+      };
+      $.ajax({
+        url: videoApiAddr + 'queryQueueAPI',
+        data: params,
+        dataType: 'jsonp',
+        async: false,
+        success: function (result) {}
+      });
+    }
+    function getSingleQueueInfo(queueId) {
+      totalJg = 0;
+      totalAgentNum = 0;
+      totalSrvNum = 0;
+      totalWaitNum = 0;
+      totalPrepareNum = 0;
+      totalNum = 0;
+      querySingle = true;
+      $('.bg-success').text('查询中。。。');
+      var params = {
+        RequestId: new Date().getTime() + '',
+        UserName: 'demo@cloudroom.com',
+        UserPswd: 'e10adc3949ba59abbe56e057f20f883e',
+        QueueID: queueId,
+        _doaction_: 'get',
+        _callback_: 'getQueueInfoCallback'
+      };
+      $.ajax({
+        url: videoApiAddr + 'queryQueueAPI',
+        data: params,
+        dataType: 'jsonp',
+        async: false,
+        success: function (result) {}
+      });
+    }
+    function editCallback(result) {
+      if (result.RspCode == 0) {
+        $('#' + currentQueueID + ' .queueName').text($('#queueName').val().trim());
+        $('#' + currentQueueID + ' .priority').text($('#priority').val().trim());
+        $('#' + currentQueueID + ' .queDesc').text($('#queDesc').val().trim());
+        alert('修改成功');
+      } else {
+        alert(result.RspDesc);
+      }
+    }
+    function addCallback(result) {
+      if (result.RspCode == 0) {
+        addFlag = true;
+        getQueue(jgid + '-' + $.trim($('#queDesc').val()));
+        alert('增加成功');
+      } else {
+        alert(result.RspDesc);
+      }
+    }
+    $('#submitQueue').click(function () {
+      addQueueInfo = [];
+      $('#editQueueModal').modal('hide');
+      if (currentQueueID) {
+        var params = {
+          RequestId: new Date().getTime() + '',
+          UserName: 'demo@cloudroom.com',
+          UserPswd: 'e10adc3949ba59abbe56e057f20f883e',
+          QueueID: currentQueueID,
+          NewQueueName: $.trim($('#queueName').val()),
+          Priority: $.trim($('#priority').val()),
+          QueDesc: jgid + '-' + $.trim($('#queDesc').val()),
+          _doaction_: 'get',
+          _callback_: 'editCallback'
+        };
+        $.ajax({
+          url: videoApiAddr + 'modifyQueueAPI',
+          data: params,
+          dataType: 'jsonp',
+          async: false,
+          success: function (result) {}
+        });
+      } else {
+        var params = {
+          RequestId: new Date().getTime() + '',
+          UserName: 'demo@cloudroom.com',
+          UserPswd: 'e10adc3949ba59abbe56e057f20f883e',
+          QueueName: $.trim($('#queueName').val()),
+          Priority: $.trim($('#priority').val()),
+          QueDesc: jgid + '-' + $.trim($('#queDesc').val()),
+          _doaction_: 'get',
+          _callback_: 'addCallback'
+        };
+        $.ajax({
+          url: videoApiAddr + 'addQueueAPI',
+          data: params,
+          dataType: 'jsonp',
+          async: false,
+          success: function (result) {}
+        });
+      }
+    });
+    function editQueue(queueID) {
+      currentQueueID = queueID;
+      currentQueueName = $('#' + queueID + ' .queueName').text();
+      currentPriority = $('#' + queueID + ' .priority').text();
+      currentQueDesc = $('#' + queueID + ' .queDesc').text();
+      $('#editQueueModalLabel').text('修改队列');
+      $('#editQueueModal').modal();
+    }
+    function deleteCallback(result) {
+      if (result.RspCode == 0) {
+        alert('删除成功');
+        $('#' + currentQueueID).remove();
+      } else {
+        alert(result.RspDesc);
+      }
+    }
+    function deleteQueue(queueID, needConf) {
+      var needConf = needConf === true || false;
+      addQueueInfo = [];
+      if (needConf || confirm('确定删除 ' + $('#' + queueID + ' .queueName').text() + ' ' + $('#' + queueID + ' .queDesc').text())) {
+        currentQueueID = queueID;
+        var params = {
+          RequestId: new Date().getTime() + '',
+          UserName: 'demo@cloudroom.com',
+          UserPswd: 'e10adc3949ba59abbe56e057f20f883e',
+          QueueID: queueID,
+          _doaction_: 'get',
+          _callback_: 'deleteCallback'
+        };
+        $.ajax({
+          url: videoApiAddr + 'delQueueAPI',
+          data: params,
+          dataType: 'jsonp',
+          async: false,
+          success: function (result) {}
+        });
+      }
+    }
+    function queryCallback(result) {
+      var que_info = result.Data.queueList;
+      var len = que_info.length;
+      if (!addFlag && len < 20) {
+        nomore = true;
+      }
+      if (addFlag) {
+        addFlag = false;
+      }
+      var tbodyStr = '';
+      for (var i = len - 1; i >= 0; i--) {
+        allQueueInfo.push(que_info[i]);
+        var operation = '';
+        var params = '\'' + que_info[i].QueueID + '\',\'' + que_info[i].QueueName + '\',\'' + que_info[i].Priority + '\',\'' + que_info[i].QueDesc + '\'';
+        operation += '<input class="btn btn-link" type="button" value="查看状态" onclick="getSingleQueueInfo(\'' + que_info[i].QueueID + '\')"/><input class="btn btn-link" type="button" value="修改" onclick="editQueue(' + params + ')"/><input class="btn btn-link" type="button" value="删除" onclick="deleteQueue(' + params + ')"/>';
+        tbodyStr += '<tr id="' + que_info[i].QueueID + '"><td class="queueName">' + que_info[i].QueueName + '</td><td class="priority">' + que_info[i].Priority + '</td><td class="queDesc">' + que_info[i].QueDesc.split('-')[1] + '</td><td>' + operation + '</td></tr>';
+      }
+      $('#tbody').prepend(tbodyStr);
+    }
+    function getQueue(queDesc) {
+      var params = {
+        RequestId: new Date().getTime() + '',
+        UserName: 'demo@cloudroom.com',
+        UserPswd: 'e10adc3949ba59abbe56e057f20f883e',
+        StartIndex: currentStartIndex,
+        QueDesc: queDesc,
+        _doaction_: 'get',
+        _callback_: 'queryCallback'
+      };
+      if (addFlag) {
+        delete(params.StartIndex);
+      }
+      $.ajax({
+        url: videoApiAddr + 'queryQueueAPI',
+        data: params,
+        dataType: 'jsonp',
+        async: false,
+        success: function (result) {}
+      });
+    }
+    getQueue(jgid);
+    function init() {
+      currentStartIndex = 1;
+      nomore = false;
+      allQueueInfo = [];
+      addQueueInfo = [];
+      $('.bg-success').text('暂无数据');
+      $('#tbody').empty();
+      getQueue(jgid);
+    }
+    function more() {
+      addQueueInfo = [];
+      if (!nomore) {
+        currentStartIndex = currentStartIndex + 20;
+        getQueue(jgid);
+      } else {
+        alert('已经没有更多了');
+      }
+    }
+    function add() {
+      currentQueueID = '';
+      currentQueueName = '';
+      currentPriority = '1';
+      currentQueDesc = '';
+      $('#editQueueModalLabel').text('新增队列');
+      $('#editQueueModal').modal();
+    }
+    $("#login_btn").click(function () {
+      var username = $.trim($('#name').val());
+      var password = $.trim($('#pwd').val());
+      if (!username || !password) {
+        popupTipLayer('请输入用户名和密码' );
+        return;
+      }
+      var data = {
+        'func': 2023,
+        'type': 2,
+        'account':'',
+        'token':'',
+        'data': [{
+          'service': 'adequacy.110',
+          'json': JSON.stringify({
+            USERCODE: username,
+            USERPASSWORD: password
+          }),
+        }]
+      };
+      $.ajax({
+        type: 'post',
+        url: crmApiAddr,
+        contentType: 'application/json;charset=utf-8',
+        data: JSON.stringify(data),
+        dataType: 'json',
+        xhrFields: { withCredentials: true },
+        crossDomain: true,
+        success: function (result) {
+          if (result.retHead == 1) {
+            var loginInfo = JSON.parse(result.data["0"].proxyresult).body.result;
+            if (loginInfo.length > 0) {
+              var department = loginInfo[0].DEPARTMENT_ID;
+              if(department == '0000000') {
+                $('.login_container').css('display', 'none');
+                $('.que_container').css('display', 'block');
+              } else {
+                popupTipLayer('没有队列管理权限');
+              }
+            } else {
+              popupTipLayer('用户名密码错误或没有队列管理权限');
+            }
+          } else {
+            popupTipLayer(result.desc);
+          }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          console.error(jqXHR);
+        }
+      });
+    });
+    //弹出提示层
+    function popupTipLayer(content) {
+      layui.use('layer', function () {
+        var layer = layui.layer;
+        layer.open({
+          title: ['提示', 'font-size:14px;'],
+          content: content //这里content是一个普通的String
+        });
+      });
+    }
+    function logout() {
+      $('.que_container').css('display', 'none');
+      $('.login_container').css('display', 'block');
+    };
+    $(document).keypress(function(event){
+      var keycode = (event.keyCode ? event.keyCode : event.which);
+      if($("#loginDiv").css("display")=="block"){
+        if(keycode == '13')
+          $("#login_btn").click();
+      }
+    });
+  </script>
+</body>
+</html>

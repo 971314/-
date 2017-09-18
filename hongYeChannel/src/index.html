@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>渠道管理系统</title>
+    <link href="./css/bootstrap.min.css" rel="stylesheet" />
+    <link href="./css/main.css" rel="stylesheet"/>
+    <script type="text/javascript" src="./lib/jquery-2.2.0.min.js"></script>
+    <script type="text/javascript" src="./lib/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="divBgImg">
+    <div class="channelTitle" id="sysTitle"></div>
+    <div class="channelInput">
+        <div class="align">
+            <ul class="clearfix">
+                <li class="left"><label class="channelLabel">渠道号</label></li>
+                <li  class="right"> <input type="text" placeholder="" class="chanInput" id="nameNo">
+                    <label class="channelLabel" style="display: none; margin-left:10px;" id="nameSp"></label>
+                </li>
+            </ul>
+            <ul class="clearfix">
+                <li class="left"><label class="channelLabel">验证码</label></li>
+                <li  class="right"> <input type="text" placeholder="" class="chanInput" id="randomCode">
+                    <label class="channelLabel" style="display: none; margin-left:10px;" id="randomCodeSp"></label>
+                    <img id="randomCodeImg" src="" alt="">
+                </li>
+            </ul>
+            <br style="clear:both;" />
+
+        </div>
+        <div  class="errorMsgInfo" id="errorMsg"></div>
+        <div  class="errorMsgInfo" style="display: block; margin-top: 15px" id="tips"> *员工请输入员工号/居间号 </div>
+
+        <div class="channelBtn">
+            <button class="btn" id="nextBtn">点击生成二维码</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal dialog-info" id="flagUserDialog" data-backdrop="static" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <p class="text-align">提示</p>
+            <div class="modal-body text-align" id="dialogContent">
+                渠道号或验证码错误
+            </div>
+            <div class="modal-body dialog-bottom" data-dismiss="modal">
+                确认
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</body>
+<script type="text/javascript" src="./downConfig.js"></script>
+<script type="text/javascript" src="js/config.js"></script>
+<script type="text/javascript" src="js/channelStepOne.js"></script>
+</html>

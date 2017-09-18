@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pobo.dao.mapper.LoginStatisticMapper">
+    <!--配置一个resultMap 指定返回的类型 -->
+    <resultMap id="loginInfo" type="com.pobo.entity.LoginInfo">
+        <id column="user_id" property="userId"/>
+        <result column="user_name" property="userName"/>
+        <result column="cnt" property="count"/>
+    </resultMap>
+
+    <select id="queryLoginInfos" resultMap="loginInfo" parameterType="java.lang.Integer">
+        SELECT user_id, user_name, COUNT(*) AS cnt FROM login WHERE login_month >= EXTRACT(YEAR_MONTH FROM SYSDATE()) - #{month} GROUP BY user_id ORDER BY cnt DESC;
+    </select>
+
+    <insert id="insertLoginInfo" parameterType="com.pobo.entity.LoginInfo">
+        INSERT INTO login(user_id, user_name,login_date, login_month) VALUES (#{userId},#{userName},SYSDATE(),
+        EXTRACT(YEAR_MONTH FROM SYSDATE()))
+        <selectKey resultType="int" keyProperty="id">
+            SELECT LAST_INSERT_ID();
+        </selectKey>
+    </insert>
+</mapper>

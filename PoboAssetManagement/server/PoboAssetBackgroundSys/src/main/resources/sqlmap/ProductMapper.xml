@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pobo.dao.mapper.ProductMapper">
+	<parameterMap type="com.pobo.model.ProductQueryParameters"
+		id="productParameters">
+		<parameter property="periodid" jdbcType="INTEGER" mode="IN" />
+		<parameter property="channelid" jdbcType="INTEGER" mode="IN" />
+		<parameter property="typeid" jdbcType="INTEGER" mode="IN" />
+		<parameter property="orderfield" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="ordertype" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="currentindex" jdbcType="INTEGER" mode="IN" />
+		<parameter property="pagecount" jdbcType="INTEGER" mode="IN" />
+		<parameter property="totalcount" jdbcType="INTEGER" mode="OUT" />
+	</parameterMap>
+	<select id="GetPageList" resultType="com.pobo.model.ProductList"
+		parameterMap="productParameters" statementType="CALLABLE">
+		{call sp_productlist(
+		#{periodid,jdbcType=INTEGER, mode=IN},
+		#{channelid,
+		jdbcType=INTEGER,mode=IN},
+		#{typeid, jdbcType=INTEGER,mode=IN},
+		#{orderfield, jdbcType=VARCHAR,mode=IN},
+		#{ordertype,
+		jdbcType=VARCHAR,mode=IN},
+		#{currentindex, jdbcType=INTEGER,mode=IN},
+		#{pagecount, jdbcType=INTEGER,mode=IN},
+		#{totalcount,
+		jdbcType=INTEGER,mode=OUT}
+		)}
+	</select>
+	<select id="GetCustomerList" parameterType="com.pobo.model.ProductCustomerPatameters"
+		resultType="com.pobo.model.ProductCustomer">
+		select * from v_productcustomers where productid=#{productid}
+		<if test="name != null">
+			<if test="name != ''">
+				and name like CONCAT('%',#{name},'%' )
+			</if>
+		</if>
+		<if test="phone != null">
+			<if test="phone != ''">
+				and (phone like CONCAT('%',#{phone},'%' ) or mobile like
+				CONCAT('%',#{phone},'%' ) )
+			</if>
+		</if>
+		<if test="statusid != null">
+			<if test="statusid != ''">
+				<if test="statusid != 0">
+					and statusid=#{statusid}
+				</if>
+			</if>
+		</if>
+		order by
+		<choose>
+			<when test="orderfield != null and orderfield!=''">
+				${orderfield}
+			</when>
+			<otherwise>
+				bookdate
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="ordertype != null and ordertype!=''">
+				${ordertype}
+			</when>
+			<otherwise>
+				desc
+			</otherwise>
+		</choose>
+		limit #{currentindex},#{pagecount};
+	</select>
+	<select id="CustomerListCount" parameterType="com.pobo.model.ProductCustomerPatameters"
+		resultType="java.lang.Integer">
+		select count(*) from v_productcustomers where productid=#{productid}
+		<if test="name != null">
+			<if test="name != ''">
+				and name like CONCAT('%',#{name},'%' )
+			</if>
+		</if>
+		<if test="phone != null">
+			<if test="phone != ''">
+				and (phone like CONCAT('%',#{phone},'%' ) or mobile like
+				CONCAT('%',#{phone},'%' ) )
+			</if>
+		</if>
+		<if test="statusid != null">
+			<if test="statusid != ''">
+				<if test="statusid != 0">
+					and statusid=#{statusid}
+				</if>
+			</if>
+		</if>
+		;
+	</select>
+	<update id="UpdateProductStatus">
+		update t_product_list set C_Status=#{status}
+		where
+		C_Id=#{id} and C_Status!=#{status};
+	</update>
+	<insert id="CreateNewProduct" useGeneratedKeys="true"
+		keyProperty="productid" parameterType="com.pobo.model.ProductModel">
+		insert into
+		t_product_list(C_ProductName,C_RiskLevel,C_PeriodStatus,C_FundChannel,C_OperType,C_Status,C_Duration,C_SubscribeLine,C_IssueSize,C_ManageFee,C_TrusteeFee,C_WarnNav,C_StopLossNav,C_ExpireTime,C_CreateTime,C_LastModifyTime,C_CreateBy,C_LastModifyBy)
+		values(#{productname},#{risklevel},#{period},#{channel},#{opertype},'2',#{duration},#{subscribeline},#{issuesize},#{managefee},#{trusteefee},#{warnnav},#{stoplossnav},#{time},now(),now(),#{uid},#{uid})
+	</insert>
+	<insert id="CreateNewProductInfo" parameterType="com.pobo.model.ProductModel">
+		insert into
+		t_product_info(C_ProductId
+		<if test="infogoal !=''">
+			,C_InvestGoal
+		</if>
+		<if test="infoscope !=''">
+			,C_InvestScope
+		</if>
+		<if test="infomanager !=''">
+			,C_InvestManager
+		</if>
+		,C_FeeDescription,C_ProfitAllocation,C_SubsAndRed,C_ProductBrief,C_InvestAdvisor,C_CreateTime,C_LastModifyTime,C_CreateBy,C_LastModifyBy)
+		values(#{productid}
+		<if test="infogoal !=''">
+			,#{infogoal}
+		</if>
+		<if test="infoscope !=''">
+			,#{infoscope}
+		</if>
+		<if test="infomanager !=''">
+			,#{infomanager}
+		</if>
+		,#{infodescription},#{infoallocation},#{infosar},#{infobrief},#{infoadvisor},now(),now(),#{uid},#{uid})
+	</insert>
+	<insert id="InsertProductNav" parameterType="com.pobo.model.Nav">
+		insert into
+		t_product_nav(C_UnitNav,C_AccNav,C_ProductId,C_PublishTime,C_CreateTime,C_LastModifyTime,C_CreateBy,C_LastModifyBy)
+		values(#{unitNav},#{accNav},#{productid},#{datetime},now(),now(),#{uid},#{uid})
+	</insert>
+	<select id="GetProductInfo" parameterType="java.lang.String"
+		resultType="com.pobo.model.ProductModel">
+		select a.C_Id productid,a.C_ProductName
+		productname,a.C_RiskLevel risklevel,a.C_PeriodStatus
+		period,a.C_FundChannel channel
+		,a.C_OperType opertype,a.C_Duration duration,a.C_SubscribeLine
+		subscribeline,a.C_SubscribeLineOrg lineorg,a.C_IssueSize issuesize
+		,a.C_ManageFee managefee,a.C_TrusteeFee trusteefee,a.C_WarnNav
+		warnnav,a.C_StopLossNav
+		stoplossnav,date_format(a.C_ExpireTime,'%Y-%m-%d') time
+		,b.C_InvestGoal infogoal,b.C_InvestScope infoscope,b.C_FeeDescription
+		infodescription,b.C_ProfitAllocation infoallocation
+		,b.C_ProductBrief infobrief,b.C_SubsAndRed infosar,b.C_InvestAdvisor
+		infoadvisor,b.C_InvestManager infomanager
+		from t_product_list a left join t_product_info b on a.C_Id=b.C_ProductId
+		where a.C_Id=#{id};
+	</select>
+	<update id="UpdateProduct" parameterType="com.pobo.model.ProductModel">
+		update t_product_list
+		set C_ProductName=#{productname}
+		<if test="risklevel!=''">
+			,C_RiskLevel=#{risklevel}
+		</if>
+		<if test="period!=''">
+			,C_PeriodStatus=#{period}
+		</if>
+		<if test="channel!=''">
+			,C_FundChannel=#{channel}
+		</if>
+		<if test="opertype!=''">
+			,C_OperType=#{opertype}
+		</if>
+		<if test="duration!=''">
+			,C_Duration=#{duration}
+		</if>
+		<if test="subscribeline!=''">
+			,C_SubscribeLine=#{subscribeline}
+		</if>
+		<if test="issuesize!=''">
+			,C_IssueSize=#{issuesize}
+		</if>
+		<if test="managefee!=''">
+			,C_ManageFee=#{managefee}
+		</if>
+		<if test="trusteefee!=''">
+			,C_TrusteeFee=#{trusteefee}
+		</if>
+		<if test="warnnav!=''">
+			,C_WarnNav=#{warnnav}
+		</if>
+		<if test="stoplossnav!=''">
+			,C_StopLossNav=#{stoplossnav}
+		</if>
+		<if test="time!=''">
+			,C_ExpireTime=#{time}
+		</if>
+		,C_LastModifyTime=now()
+		,C_LastModifyBy=#{uid} where C_Id=#{productid}
+	</update>
+	<update id="UpdateProductInfo" parameterType="com.pobo.model.ProductModel">
+		update
+		t_product_info set C_LastModifyTime=now()
+		<if test="infogoal !=''">
+			,C_InvestGoal=#{infogoal}
+		</if>
+		<if test="infoscope !=''">
+			,C_InvestScope=#{infoscope}
+		</if>
+		<if test="infodescription !=''">
+			,C_FeeDescription=#{infodescription}
+		</if>
+		<if test="infoallocation !=''">
+			,C_ProfitAllocation=#{infoallocation}
+		</if>
+		<if test="infosar !=''">
+			,C_SubsAndRed=#{infosar}
+		</if>
+		<if test="infobrief !=''">
+			,C_ProductBrief=#{infobrief}
+		</if>
+		<if test="infoadvisor !=''">
+			,C_InvestAdvisor=#{infoadvisor}
+		</if>
+		<if test="infomanager !=''">
+			,C_InvestManager=#{infomanager}
+		</if>
+		,C_LastModifyBy=#{uid} where C_ProductId=#{productid}
+	</update>
+    <delete id="deleteProductNav" parameterType="java.lang.String">
+    	delete from t_product_nav where C_ProductId=#{productid}
+    </delete>
+</mapper>

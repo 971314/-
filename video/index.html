@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="renderer" content="webkit">
+  <title>双录后台管理中心</title>
+
+  <link href="lib/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/common.css" rel="stylesheet">
+  <link href="css/index.css" rel="stylesheet">
+  <link href="layui/css/layui.css" rel="stylesheet">
+  <link href="lib/css/perfect-scrollbar.min.css" rel="stylesheet">
+
+  <!--[if lt IE 9]>
+    <script src="js/html5shiv.min.js"></script>
+    <script src="js/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body class="bgc-white">
+  <div class="login_container" style="display: block;">
+    <div class="login_header">
+      <p>欢迎<span>登录</span></p>
+      <p>Welcome to login</p>
+    </div>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <div class="col-xs-12">
+          <input id="name" class="form-control" type="text" value="" placeholder="用户名">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-xs-12">
+          <input id="pwd" class="form-control" type="password" value="" placeholder="密码">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-xs-12">
+          <input id="login_btn" class="btn btn-block btn-primary" type="button" value="登&nbsp;&nbsp;&nbsp;录">
+        </div>
+      </div>
+    </form>
+    <div class="login_footer">
+      上海澎博提供技术&nbsp;&nbsp;&nbsp;© 2017
+    </div>
+  </div>
+  <div class="container">
+    <!--安装插件提示 -->
+    <div id="not_installed_tip" class="fixplugin_container" style="display:none">
+      <div class="fixplugin_module">
+        <div class="fixplugin_header">插件安装提示</div>
+        <div class="fixplugin_conter">检测到您尚未安装插件，请下载安装最新版本！</div>
+        <div class="fixplugin_download"><a href="CloudroomVideoSDK.exe">DOWNLOAD NOW</a></div>
+        <div class="fixplugin_notice">提示：控件安装完成后，请重启浏览器!</div>
+      </div>
+    </div>
+    <!--安装插件提示 -->
+    <div id="version_low_tip" class="fixplugin_container"  style="display:none">
+      <div class="fixplugin_module">
+        <div class="fixplugin_header">插件安装提示</div>
+        <div class="fixplugin_conter">检测到您的插件版本过低，请下载安装最新版本！</div>
+        <div class="fixplugin_download"><a href="CloudroomVideoSDK.exe">DOWNLOAD NOW</a></div>
+        <div class="fixplugin_notice">提示：控件安装完成后，请重启浏览器!</div>
+      </div>
+    </div>
+    <div class="queue_container" style="display:none">
+      <div class="queue_module">
+        <!-- 头部开始 -->
+        <div class="queue_header">
+          <span class="queue_username"></span>
+          <button class="btn btn-primary" id="queue_uptate" onclick="refresh_que()">刷新</button>
+          <button class="btn" id="queue_logout" onclick="logout()">注销</button>
+        </div>
+        <!-- 头部结束 -->
+        <!-- 列表开始 -->
+        <ul id="queue_list">
+        </ul>
+        <!-- 列表结束 -->
+      </div>
+    </div>
+    <div class="start_server_container" style="display:none">
+      <div class="start_server_module">
+        <!-- 头部开始 -->
+        <div class="start_server_header">
+          <span class="start_server_username">欢迎<span id="start_server_username"></span></span>
+          <button class="btn btn-primary" id="one_touch_btn" onclick="oneTouch()">一键开启/关闭</button>
+          <button class="btn" id="start_server_logout" onclick="logout()">注销</button>
+        </div>
+        <!-- 头部结束 -->
+        <!-- 列表开始 -->
+        <ul id="start_server_list">
+          <li>
+            <span>窗口名称</span>
+            <span>专家人数</span>
+            <span>排队人数</span>
+            <span>正在进行的对话</span>
+            <span>服务状态</span>
+            <span>优先级</span>
+          </li>
+        </ul>
+        <div class="start_server_footer">
+          <span class="start_server_footer_left">
+            <input type="checkbox" name="start_server_disturb" id="start_server_disturb" value="0">
+            <span>免打扰（手动分配）</span>
+          </span>
+          <span class="start_server_footer_right">下一位客户</span>
+        </div>
+        <!-- 列表结束 -->
+      </div>
+    </div>
+  </div>
+  <div class="meeting_container" style="display: none;">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="javascript:void(0);">
+            <img src="image/logo.png" alt="">
+            <span>澎博.双录后台管理中心</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="container-left">
+        <div class="basic-info">
+          <div class="head">
+            <h4>基本信息</h4>
+            <a class="pull-right" data-toggle="collapse" href="#basic_info" aria-expanded="true" aria-controls="basic_info">
+              <span class="glyphicon glyphicon-triangle-top"></span>
+            </a>
+          </div>
+          <div id="basic_info" class="body collapse in">
+            <div class="hr"></div>
+            <form class="form-horizontal">
+              <div class="form-group">
+                <span class="control-label">姓名</span>
+                <p id="USER_NAM" class="form-control-static"></p>
+              </div>
+              <div class="form-group">
+                <span class="control-label">资金账号</span>
+                <p id="FUNDS_ACC" class="form-control-static funds-account">请点击按钮获取</p>
+                <input id="getFundsAcc" class="btn btn-link pull-right" type="button" value="获取">
+              </div>
+              <div class="form-group">
+                <span class="control-label">手机号码</span>
+                <p id="PHONENUM" class="form-control-static"></p>
+              </div>
+              <div class="form-group">
+                <span class="control-label">身份证号</span>
+                <p id="ID_NO" class="form-control-static"></p>
+                <input class="btn btn-link pull-right hide" type="button" value="公安认证">
+              </div>
+              <div class="form-group ps-aut hide">
+                <img class="ps-aut-status" src="image/success.png" alt="">
+                <p class="form-control-static">姓名与身份证号码一致</p>
+                <img class="ps-aut-img" src="" alt="">
+              </div>
+              <div class="form-group">
+                <span class="control-label">证件期限</span>
+                <p id="IDVALID" class="form-control-static"></p>
+              </div>
+              <div class="form-group">
+                <span class="control-label">职业</span>
+                <p id="OCCUPATION_CD" class="form-control-static"></p>
+              </div>
+              <div class="form-group">
+                <span class="control-label">所属营业部</span>
+                <p id="DEPARTMENT" class="form-control-static"></p>
+              </div>
+              <div class="form-group">
+                <span class="control-label">联系电话</span>
+                <p id="LINKTELEPHONE" class="form-control-static"></p>
+              </div>
+              <div class="form-group">
+                <span class="control-label">传真号码</span>
+                <p id="FAX_NO" class="form-control-static"></p>
+              </div>
+              <div class="form-group">
+                <span class="control-label">详细地址</span>
+                <p id="LINKADDR" class="form-control-static"></p>
+              </div>
+              <div class="form-group">
+                <span class="control-label">邮政编码</span>
+                <p id="POSTCODE" class="form-control-static"></p>
+              </div>
+              <div class="form-group">
+                <span class="control-label">电子邮件</span>
+                <p id="EMAIL" class="form-control-static"></p>
+              </div>
+              <div class="form-group">
+                <span class="control-label">实际控制(人)</span>
+                <p id="CONTROLLINK" class="form-control-static"></p>
+              </div>
+              <div class="form-group">
+                <span class="control-label">交易类型</span>
+                <p id="TRADE_TYP" class="form-control-static"></p>
+              </div>
+              <div class="form-group">
+                <span class="control-label">实际收益(人)</span>
+                <p id="BENEFICIARY" class="form-control-static"></p>
+              </div>
+              <div class="form-group">
+                <span class="control-label">不良诚信记录</span>
+                <p id="NO_CREDIT_TYP" class="form-control-static"></p>
+              </div>
+              <div class="form-group">
+                <span class="control-label">投资期限</span>
+                <p id="INVEST_TIME" class="form-control-static"></p>
+              </div>
+              <div class="form-group">
+                <span class="control-label">期望收益</span>
+                <p id="INVEST_GAIN" class="form-control-static"></p>
+              </div>
+              <div class="form-group">
+                <span class="control-label">投资品种</span>
+                <p id="INVEST_CATEGORY" class="form-control-static"></p>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="appropriateness-result">
+          <div class="head">
+            <h4>适当性结果</h4>
+            <a class="pull-right" data-toggle="collapse" href="#appropriateness_result" aria-expanded="true" aria-controls="appropriateness_result">
+              <span class="glyphicon glyphicon-triangle-top"></span>
+            </a>
+          </div>
+          <div id="appropriateness_result" class="body collapse in">
+            <div class="hr"></div>
+            <form class="form-horizontal">
+              <div class="form-group">
+                <span class="control-label">风险承受能力</span>
+                <p id="GRADE_CODE" class="form-control-static"></p>
+                <input id="show_detail" class="btn btn-link pull-right" type="button" value="查看详情">
+              </div>
+              <div class="form-group">
+                <span class="control-label">适配产品或服务</span>
+                <p id="MATCH_PRD_RISK" class="form-control-static"></p>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="attachment">
+          <div class="head">
+            <h4>附件</h4>
+            <a class="pull-right" data-toggle="collapse" href="#attachment" aria-expanded="false" aria-controls="attachment">
+              <span class="glyphicon glyphicon-triangle-bottom"></span>
+            </a>
+          </div>
+          <div id="attachment" class="body collapse">
+            <div class="hr"></div>
+            <form class="form-horizontal">
+              <div class="form-group">
+                <span class="control-label">投资者身份证正面</span>
+                <img id="forth" src="" alt="暂无附件">
+              </div>
+              <div class="form-group">
+                <span class="control-label">投资者身份证反面</span>
+                <img id="fifth" src="" alt="暂无附件">
+              </div>
+            </form>
+            <form id="attachment_list" class="form-horizontal">
+
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="container-right">
+        <div class="video">
+          <div class="video-guest">
+          </div>
+          <div class="video-host">
+          </div>
+          <div class="media-host" style="display: none;">
+          </div>
+          <div class="location-dir">
+            视频及照片存放位置： <span id="location_dir"></span>
+          </div>
+          <div class="video-function">
+            <input id="pic_btn" class="btn btn-link" type="button" value="拍照">
+            <input id="record_btn" class="btn btn-link record_start_btn" type="button" value="开始录像">
+            <span id="record_span"></span>
+            <input id="play_btn" class="btn btn-link hide" type="button" value="播放视频">
+            <input id="video_done_btn" class="btn btn-link video_done_btn" type="button" value="通过">
+            <input id="video_undone_btn" class="btn btn-link video_undone_btn" type="button" value="驳回">
+            <input id="turnover_btn" class="btn btn-link pull-right hide" type="button" value="翻转">
+          </div>
+        </div>
+        <div class="general-words">
+          <div class="head">
+            <h4>常用话术</h4>
+          </div>
+          <div class="body">
+            <div class="hr"></div>
+            <div id="general_words" class="words-group">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="appropriateness_detail"style="display: none;">
+    </div>
+    <div class="audio">
+      <audio id="audio" preload="preload" loop="loop" src="music/come.mp3"></audio>
+    </div>
+  </div>
+
+  <script src="lib/js/jquery.min.js"></script>
+  <script src="lib/js/bootstrap.min.js"></script>
+  <script src="layui/layui.js"></script>
+  <script src="lib/js/perfect-scrollbar.jquery.min.js"></script>
+  <!--[if IE ]>
+    <object id="crVideoObj" classid="clsid:07EFD662-A1BB-4d8d-9BEE-F7E43E5FEBF5" width="1" height="1" ></object>
+    <object id="crMgrObj" classid="clsid:120AD2B0-68F2-46c6-88D8-52173F501C0F" width="1" height="1" ></object>
+    <object id="crMeetObj" classid="clsid:9E9DD983-A9F8-4dff-B694-B1AE1C708B1E" width="1" height="1" ></object>
+    <object id="crQueueObj" classid="clsid:9AAD199D-A02F-4513-875D-AA81091E44B9" width="1" height="1" ></object>
+    <object id="crHttpObj" classid="clsid:7E44F8C9-7C8D-4004-8F45-D9819D78663C" width="1" height="1" ></object>
+    <object id="crScreenShareObj" classid="clsid:6FF142C5-8A36-49d7-B627-D60B803550FC" width="1" height="1" ></object>
+    <script type="text/javascript" src="lib/js/CloudroomVideoSDK_iePatch.js"></script>
+  <![endif]-->
+
+  <script src="lib/js/CloudroomVideoSDK.js"></script>
+  <script src="js/conf.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/service.js"></script>
+  <script src="js/queue.js"></script>
+  <script src="js/login.js"></script>
+  <script>
+    $(function () {
+      var g_session_id;
+      var g_token = '';
+      var g_get_funds_acc = false;
+      var g_ps_aut_img = false;
+      var g_show_detail = false;
+      var g_id_front = false;
+      var g_id_back = false;
+      $('#location_dir').text(videoConf.locationDir);
+      $('#general_words').append(videoConf.generalWords);
+      $('.glyphicon.glyphicon-triangle-top').click(function () {
+        $(this).toggleClass('glyphicon-triangle-top glyphicon-triangle-bottom');
+      });
+      $('.glyphicon.glyphicon-triangle-bottom').click(function () {
+        $(this).toggleClass('glyphicon-triangle-top glyphicon-triangle-bottom');
+      });
+      $('#getFundsAcc').click(function () {
+        if (!g_get_funds_acc) {
+          g_get_funds_acc = true;
+          var data = {
+            'func': 2023,
+            'type': 2,
+            'account':'',
+            'token':'',
+            'data': [{
+              'service': 'adequacy.109',
+              'json': JSON.stringify({
+                INVESTOR_NAM : g_user_data.INVESTOR_NAM,
+                ID_NO : g_user_data.ID_NO
+              })
+            }]
+          };
+          $.ajax({
+            type: 'post',
+            url: videoConf.crmServerAddr,
+            contentType: 'application/json;charset=utf-8',
+            data: JSON.stringify(data),
+            dataType: 'json',
+            xhrFields: { withCredentials: true },
+            crossDomain: true,
+            success: function (result) {
+              g_get_funds_acc = false;
+              if (result.retHead == 1) {
+                var fundsAcc = JSON.parse(result.data["0"].proxyresult).body.result;
+                if (fundsAcc.length > 0 && fundsAcc[0].INVESTOR_ID) {
+                  $('#FUNDS_ACC').text(fundsAcc[0].INVESTOR_ID);
+                } else {
+                  $('#FUNDS_ACC').text('暂无资金账号');
+                }
+              } else {
+                popupTipLayer(result.desc);
+              }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              g_get_funds_acc = false;
+              console.error(jqXHR);
+            }
+          });
+        }
+      });
+      $('.ps-aut-img').click(function () {
+          if (!g_ps_aut_img) {
+            g_ps_aut_img = true;
+            layui.use('layer', function () {
+              var layer = layui.layer;
+              layer.open({
+                type: 1,
+                title: '公安认证',
+                content: '<img class="ps-aut-img" src="' + $('.ps-aut-img').attr('src') + '" alt="">',
+                offset: 'l',
+                shade: 0,
+                end: function () {
+                  g_ps_aut_img = false;
+                }
+              });
+            });
+          }
+      });
+      $('#show_detail').click(function () {
+        if (!g_show_detail) {
+          g_show_detail = true;
+          layui.use('layer', function () {
+            var layer = layui.layer;
+            layer.open({
+              type: 1,
+              title: '适当性评估',
+              content: $('#appropriateness_detail'),
+              offset: 'l',
+              area: '334px',
+              shade: 0,
+              success: function(layero, index){
+                $('#appropriateness_detail').perfectScrollbar();
+              },
+              end: function () {
+                g_show_detail = false;
+              }
+            });
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

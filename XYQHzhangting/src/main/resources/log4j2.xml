@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Log4j 2.x 配置文件。每30秒自动检查和应用配置文件的更新； -->
+<Configuration status="warn" monitorInterval="30" strict="true" schema="Log4J-V2.2.xsd">
+    <Appenders>
+        <!-- 输出到控制台 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!-- 需要记录的级别 -->
+            <!-- <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY" /> -->
+            <PatternLayout pattern="[%-5p] [%d{yyyy-MM-dd HH:mm:ss.SSS}] (%-25F:%-4L) %t - %m%n"/>
+        </Console>
+
+        <!-- 输出到文件，按天或者超过200MB分割 -->
+        <RollingRandomAccessFile name="RollingFile" fileName="./logs/hall.log"
+                                 filePattern="./logs/$${date:yyyy-MM}/hall-%d{yyyy-MM-dd}-%i.log.gz">
+            <!-- 需要记录的级别 -->
+            <!-- <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" /> -->
+            <PatternLayout pattern="[%-5p] [%d{yyyy-MM-dd HH:mm:ss.SSS}] (%-25F:%-4L) %t - %m%n"/>
+
+            <CronTriggeringPolicy schedule="0 0 0 * * ?"/>
+
+            <DefaultRolloverStrategy max="100">
+                <!--
+                Nested conditions: the inner condition is only evaluated on files
+                for which the outer conditions are true.
+                -->
+                <Delete basePath="${baseDir}" maxDepth="2">
+                    <IfFileName glob="*/hall-*.log.gz">
+                        <IfLastModified age="60d">
+                            <IfAny>
+                                <IfAccumulatedFileSize exceeds="100 GB"/>
+                                <IfAccumulatedFileCount exceeds="10"/>
+                            </IfAny>
+                        </IfLastModified>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
+
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="20MB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+        </RollingRandomAccessFile>
+
+        <Async name="Async">
+            <AppenderRef ref="RollingFile"/>
+        </Async>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info"> <!-- 全局配置 -->
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Root>
+        <Logger name="com.pobo" level="ALL" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Logger>
+    </Loggers>
+</Configuration>

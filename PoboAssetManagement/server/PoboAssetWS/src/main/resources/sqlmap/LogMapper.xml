@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pobo.dao.mapper.ILogMapper">
+    <!--配置一个resultMap 指定返回的类型 -->
+
+    <insert id="insertCustomerOpInfo">
+        INSERT INTO t_operation_log(C_CustomerId, C_LogContent, C_LogType, C_IP, C_LogTime)
+        VALUES (
+          (SELECT C_Id FROM t_customer WHERE C_LoginName = #{loginname} AND C_OrgId = #{orgid}),
+          #{content}, 1, #{ip}, SYSDATE()
+        )
+    </insert>
+
+    <insert id="insertBookingLog">
+        INSERT INTO t_operation_log(C_CustomerId, C_ProductId, C_BookingId, C_LogContent, C_LogType, C_IP, C_LogTime)
+        VALUES (
+            (SELECT C_Id FROM t_customer WHERE C_LoginName = #{loginname} AND C_OrgId = #{orgid}),
+            #{productid}, #{bookingid}, #{content}, 3, #{ip}, SYSDATE()
+        )
+    </insert>
+</mapper>

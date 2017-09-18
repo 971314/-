@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>布局</title>
+    <style>
+        html,body{margin:0}
+      .topNav{
+          border:solid 1px red;
+          background: red;
+          position: fixed;
+          width:100%;
+          height:60px;
+          line-height:60px;
+          text-align: center;
+          color:#fff;
+
+      }
+      .centerContext{
+          border:solid 1px blue;
+          background: #ccc;
+          position: absolute;
+          width:100%;
+          bottom: 40px;
+          top:60px;
+          text-align: center;
+          color:#fff;
+          left:0;
+          right:0;
+          margin:0 auto;
+          z-index: -1;
+      }
+      .footer{
+          border:solid 1px green;
+          background: green;
+          height:40px;
+          line-height:40px;
+          position: fixed;
+          bottom: 0;
+          width:100%;
+          text-align: center;
+          color:#fff;
+      }
+      .left{
+          border:solid 1px #669ae1;
+          background: #669ae1;
+          width:20%;
+          float:left;
+          height:100%;
+          margin-bottom: 40px;
+          overflow: auto;
+          color:#fff;
+          -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+          box-sizing: border-box;
+      }
+      .right{
+          border: solid 1px #1d5464;
+          height:100%;
+          width:80%;
+          background: #1d5464;
+          color:#fff;
+          overflow: auto;
+          -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+          box-sizing: border-box;
+      }
+        .right div{height:1000px}
+    </style>
+</head>
+<body>
+    <div class="topNav">头部</div>
+    <div class="centerContext">
+        <div class="left">左边</div>
+        <div class="right">
+            <div >我是右边里面的内容我的高度是1000px</div>
+        </div>
+    </div>
+    <div class="footer">底部</div>
+</body>
+</html>

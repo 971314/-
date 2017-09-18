@@ -1,0 +1,11 @@
+body {
+  background-color: #e7e8eb;
+  background-size: cover;
+}
+.bgc-white {
+  background-color: #fff;
+}
+.form-horizontal .control-label {
+  font-weight: normal;
+  text-align: left;
+}

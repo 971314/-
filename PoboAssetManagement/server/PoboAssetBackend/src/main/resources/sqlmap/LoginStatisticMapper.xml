@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.com.pobo.dao.mapper.LoginStatisticMapper">
+    <!--配置一个resultMap 指定返回的类型 -->
+    <resultMap id="loginCount" type="HashMap">
+        <id column="user_id" property="userId"/>
+        <result column="user_name" property="userName"/>
+        <result column="cnt" property="count"/>
+    </resultMap>
+    <resultMap id="loginInfo" type="HashMap">
+        <id column="user_name" property="userName"/>
+        <result column="login_date" property="loginDate"/>
+    </resultMap>
+
+    <select id="queryLoginCount" resultMap="loginCount">
+        SELECT user_id, user_name, COUNT(*) AS cnt
+        FROM t_login_info
+        WHERE login_month >= EXTRACT(YEAR_MONTH FROM SYSDATE()) - #{month} AND org_number = #{orgNumber}
+        GROUP BY user_id
+        ORDER BY cnt DESC
+        LIMIT #{offset}, #{pagesize}
+    </select>
+
+    <select id="countLogin" resultType="Integer">
+        SELECT COUNT(DISTINCT user_id) AS cnt
+        FROM t_login_info
+        WHERE login_month >= EXTRACT(YEAR_MONTH FROM SYSDATE()) - #{month} AND org_number = #{orgNumber}
+    </select>
+
+    <select id="queryLoginInfo" resultMap="loginInfo">
+        SELECT user_name, login_date
+        FROM t_login_info
+        WHERE user_id = #{userId} AND org_number = #{orgNumber}
+        ORDER BY login_date DESC
+        LIMIT #{offset}, #{pagesize}
+    </select>
+
+    <select id="countLoginInfo" resultType="Integer">
+        SELECT COUNT(*)
+        FROM t_login_info
+        WHERE user_id = #{userId} AND org_number = #{orgNumber}
+    </select>
+
+    <select id="queryByDateAndId" resultType="map">
+        SELECT user_id AS userId, user_name AS userName, login_date AS loginDate
+        FROM t_login_info
+        WHERE
+            org_number = #{orgNumber}
+            <if test="fromDate != null and fromDate != ''"> AND DATE(login_date) &gt;= DATE(#{fromDate})</if>
+            <if test="toDate != null and toDate != ''">AND DATE(login_date) &lt;= DATE(#{toDate})</if>
+            <if test="userId != null and userId != ''">AND  user_id = #{userId}</if>
+        ORDER BY login_date DESC
+        LIMIT 1000;
+    </select>
+
+    <insert id="insertLoginInfo">
+        INSERT INTO t_login_info(user_id, user_name, org_number, login_date, login_month) VALUES (#{userId}, #{userName},
+        #{orgNumber},SYSDATE(),
+        EXTRACT(YEAR_MONTH FROM SYSDATE()))
+        <selectKey resultType="int" keyProperty="id">
+            SELECT LAST_INSERT_ID();
+        </selectKey>
+    </insert>
+</mapper>

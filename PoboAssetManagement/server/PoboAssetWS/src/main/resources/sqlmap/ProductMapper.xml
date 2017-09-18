@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pobo.dao.mapper.IProductMapper">
+    <!--配置一个resultMap 指定返回的类型 -->
+    <resultMap id="productList" type="HashMap">
+        <id column="C_ProductId" property="productid"/>
+        <result column="C_ProductName" property="productname"/>
+        <result column="C_Priority" property="priority"/>
+        <result column="C_SubscribeLine" property="subscribeline"/>
+        <result column="C_Duration" property="duration"/>
+        <result column="C_IssueSize" property="issuesize"/>
+        <result column="C_NavPublishTime" property="navpublishtime"/>
+        <result column="C_FundChannel" property="fundchannel"/>
+        <result column="C_FundChannelName" property="fundchannelname"/>
+        <result column="C_ManageFee" property="managefee"/>
+        <result column="C_TrusteeFee" property="trusteefee"/>
+        <result column="C_WarnNav" property="warnnav"/>
+        <result column="C_StopLossNav" property="stoplossnav"/>
+        <result column="C_OperType" property="opertype"/>
+        <result column="C_OperTypeName" property="opertypename"/>
+        <result column="C_IssueTime" property="issuetime"/>
+        <result column="C_PeriodStatus" property="periodstatus"/>
+        <result column="C_PeriodStatusName" property="periodstatusname"/>
+        <result column="C_RiskLevel" property="risklevel"/>
+        <result column="C_RiskLevelName" property="risklevelname"/>
+        <result column="C_PublishTime" property="publishtime"/>
+        <result column="C_ExpireTime" property="expiretime"/>
+        <result column="C_UnitNav" property="unitnav"/>
+        <result column="C_AccNav" property="accnav"/>
+        <result column="C_OrgId" property="orgid"/>
+    </resultMap>
+
+    <resultMap id="productInfo" type="HashMap">
+        <id column="C_ProductId" property="productid"/>
+        <result column="C_ProductBrief" property="brief"/>
+        <result column="C_InvestGoal" property="goal"/>
+        <result column="C_ProfitAllocation" property="profitallocation"/>
+        <result column="C_SubsAndRed" property="subsandred"/>
+        <result column="C_InvestManager" property="manager"/>
+        <result column="C_ProductDescription" property="description"/>
+        <result column="C_FeeDescription" property="fee"/>
+        <result column="C_InvestScope" property="scope"/>
+        <result column="C_InvestAdvisor" property="advisor"/>
+    </resultMap>
+
+    <select id="queryProductList" resultMap="productList">
+        (
+            SELECT *
+            FROM v_productlist_ws
+            WHERE C_PeriodStatus = 1 AND C_OrgId = #{orgid}
+            ORDER BY C_ExpireTime
+        )
+        UNION
+        (
+            SELECT *
+            FROM v_productlist_ws
+            WHERE C_PeriodStatus != 1 AND C_OrgId = #{orgid}
+            ORDER BY C_NavPublishTime DESC
+        )
+        ORDER BY C_Priority DESC
+    </select>
+
+    <select id="queryProductDetails" resultMap="productInfo">
+        SELECT C_ProductId, C_InvestGoal, C_InvestScope, C_FeeDescription,
+                C_ProfitAllocation, C_SubsAndRed, C_ProductBrief, C_ProductDescription,
+                C_InvestAdvisor, C_InvestManager
+        FROM t_product_info
+        WHERE C_ProductId = #{productid};
+    </select>
+
+    <select id="queryNavList" resultType="map">
+        SELECT C_UnitNav AS unitnav, C_AccNav AS accnav, DATE_FORMAT(C_PublishTime,'%Y-%m-%d') AS publishtime
+        FROM t_product_nav
+        WHERE C_ProductId = #{productid}
+        ORDER BY C_PublishTime DESC
+        LIMIT #{offset}, #{pagesize}
+    </select>
+</mapper>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>提示</title>
+    <link href="../css/main.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="divBgImg">
+    <div class="channelTitle" id="cTitle">APP认证账号注册成功</div>
+    <div class="sucTitle" style="margin-bottom:5px;">
+        <label class="sucLabel">账号：</label>
+        <span class="sucSpan" id="name"></span>
+    </div>
+    <div class="sucTitle">
+        <label class="sucLabel">密码：</label>
+        <span class="sucSpan" id="pwd"></span>
+    </div>
+    <div class="channelTitle tipApp">点击下方按钮下载APP</div>
+    <div class="channelBtn">
+        <button class="btn" id="nextBtn">下载APP</button>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../lib/jquery-2.2.0.min.js"></script>
+<script type="text/javascript" src="../downConfig.js"></script>
+<script type="text/javascript" src="../js/config.js"></script>
+<script>
+
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg); //匹配目标参数
+        if (r != null) return unescape(r[2]);
+        return null; //返回参数值
+    }
+
+    var name = getUrlParam("name");
+    //var name = sessionStorage.getItem("loginName");
+    var pwtStr="";
+    //var loginPwd = sessionStorage.getItem("loginPwd");
+    var loginPwd = getUrlParam("pwd");
+    $("#name").html(name.substring(0,3)+"****"+name.substring(7,11));
+    if(loginPwd=="0")
+    {
+        pwtStr = "如忘记密码请在App中找回";
+        $("#cTitle").html("APP认证账号");
+    }
+    else
+        pwtStr=name.substr(5, 6);
+
+    $("#pwd").html(pwtStr);
+
+
+    $("#nextBtn").click(function (){
+        var osType = getOsType();
+        var channelId = getUrlParam("id");
+        //var channelId = sessionStorage.getItem('channelID');
+        $.ajax({
+            url: serverIP + channelUrl,
+            type: 'POST',
+            data: JSON.stringify({
+                func: downloads,
+                data: {
+                    phone: name,
+                    os: osType,
+                    channelNumber: channelId,
+                }
+            }),
+            contentType: 'application/json',
+            crossDomain: true,
+            success: function (data) {
+                console.log('success');
+            }, error: function (data) {
+                console.error('统计下载量失败');
+            }
+        });
+        if(osType == "Android")
+        {
+            window.location.href = androdAddr;
+        }
+        else if(osType == "IOS")
+        {
+            window.location.href = iosAddr;
+        }
+    });
+
+    function getOsType() {
+        var u = navigator.userAgent;
+        console.log(u);
+        if(u.indexOf('MicroMessenger') > -1 )
+            return "WeiXin";
+        else if (u.indexOf('Android') > -1 || u.indexOf('Linux') > -1)
+            return "Android";
+        else if (u.indexOf('iPhone') > -1 || u.indexOf('iPad') > -1 || u.indexOf('iPod') > -1)
+            return "IOS";
+        else if (u.indexOf('Windows Phone') > -1)
+            return "Windows";
+
+        else
+        {
+            console.log("当前操作系统未知");
+            //未知时返回Android，解决系统未识别问题
+            return "Android";
+        }
+
+    }
+
+
+</script>
+</html>

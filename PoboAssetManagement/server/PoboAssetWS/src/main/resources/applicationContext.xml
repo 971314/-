@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+							http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+							http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+    <import resource="classpath:META-INF/cxf/cxf.xml"/>
+
+    <bean id="configProperties" class="com.pobo.bean.PropertyConfigurer">
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="locations">
+            <list>
+                <!-- 添加 properties 配置文件 -->
+                <value>classpath:properties/jdbc.properties</value>
+                <value>classpath:properties/globalConfig.properties</value>
+            </list>
+        </property>
+        <property name="fileEncoding" value="utf-8"/>
+    </bean>
+
+    <!-- 根据注解，自动注入 -->
+    <context:annotation-config/>
+    <context:component-scan base-package="com.pobo"/>
+
+    <import resource="classpath:config/pbamws-aop.xml"/>
+    <import resource="classpath:config/pbamws-db.xml"/>
+
+    <!-- webservice -->
+    <import resource="classpath:ws/*-ws.xml"/>
+
+</beans>

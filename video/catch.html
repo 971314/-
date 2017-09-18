@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>双录后台管理中心</title>
+
+  <link href="lib/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/common.css" rel="stylesheet">
+  <link href="css/index.css" rel="stylesheet">
+  <link href="layui/css/layui.css" rel="stylesheet">
+
+  <!--[if lt IE 9]>
+    <script src="js/html5shiv.min.js"></script>
+    <script src="js/respond.min.js"></script>
+  <![endif]-->
+
+  <style>
+    .catch_container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: -157px;
+      margin-left: -250px;
+      border-radius: 5px;
+      padding: 30px 50px 20px;
+      width: 500px;
+      background-color: #fff;
+    }
+  </style>
+</head>
+<body class="bgc-white">
+  <div class="login_container" style="display: block;">
+    <div class="login_header">
+      <p>欢迎<span>登录</span></p>
+      <p>Welcome to login</p>
+    </div>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <div class="col-xs-12">
+          <input id="name" class="form-control" type="text" value="" placeholder="用户名">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-xs-12">
+          <input id="pwd" class="form-control" type="password" value="" placeholder="密码">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-xs-12">
+          <input id="login_btn" class="btn btn-block btn-primary" type="button" value="登&nbsp;&nbsp;&nbsp;录">
+        </div>
+      </div>
+    </form>
+    <div class="login_footer">
+      上海澎博提供技术&nbsp;&nbsp;&nbsp;© 2017
+    </div>
+  </div>
+  <div class="container">
+    <div class="catch_container" style="display: none;">
+      <!-- 头部开始 -->
+      <div class="clearfix" style="margin-bottom: 20px;">
+        <span id="username" style="display: inline-block; width: 340px; font-size: 20px; color: #3692e9;"></span>
+        <input id="logout_btn" class="btn btn-link" type="button" value="注销">
+      </div>
+      <form class="form-horizontal">
+        <div class="form-group">
+          <label for="phonenum" class="col-xs-3 control-label">手机号</label>
+          <div class="col-xs-9">
+            <input id="phonenum" class="form-control" type="text" value="" placeholder="请输入投资者手机号">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="name" class="col-xs-3 control-label">姓名</label>
+          <div class="col-xs-9">
+            <input id="name" class="form-control" type="text" value="" placeholder="请输入投资者姓名">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="id_no" class="col-xs-3 control-label">身份证号</label>
+          <div class="col-xs-9">
+            <input id="id_no" class="form-control" type="text" value="" placeholder="请输入投资者身份证号">
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-xs-6">
+            <input id="complete_btn" class="btn btn-block btn-primary" type="button" value="通过">
+          </div>
+          <div class="col-xs-6">
+            <input id="reject_btn" class="btn btn-block btn-danger" type="button" value="驳回">
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="lib/js/jquery.min.js"></script>
+  <script src="lib/js/bootstrap.min.js"></script>
+  <script src="layui/layui.js"></script>
+  <script src="js/conf.js"></script>
+  <script>
+    $(function () {
+      var username;
+      var phonenum;
+      var name;
+      var id_no;
+      $("#login_btn").click(function () {
+        username = $.trim($('#name').val());
+        var password = $.trim($('#pwd').val());
+        if (!username || !password) {
+          popupTipLayer('请输入用户名和密码' );
+          return;
+        }
+        var data = {
+          'func': 2023,
+          'type': 2,
+          'account':'',
+          'token':'',
+          'data': [{
+            'service': 'adequacy.110',
+            'json': JSON.stringify({
+              USERCODE: username,
+              USERPASSWORD: password
+            }),
+          }]
+        };
+        $.ajax({
+          type: 'post',
+          url: videoConf.crmServerAddr,
+          contentType: 'application/json;charset=utf-8',
+          data: JSON.stringify(data),
+          dataType: 'json',
+          xhrFields: { withCredentials: true },
+          crossDomain: true,
+          success: function (result) {
+            if (result.retHead == 1) {
+              var loginInfo = JSON.parse(result.data["0"].proxyresult).body.result;
+              if (loginInfo.length > 0) {
+                g_department = loginInfo[0].DEPARTMENT_ID;
+                $('#username').text(username);
+                $('body').removeClass('bgc-white');
+                $('.login_container').css('display', 'none');
+                $('.catch_container').css('display', 'block');
+              } else {
+                popupTipLayer('用户名密码错误或没有坐席权限');
+              }
+            } else {
+              popupTipLayer(result.desc);
+            }
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.error(jqXHR);
+          }
+        });
+      });
+      //弹出提示层
+      function popupTipLayer(content) {
+        layui.use('layer', function () {
+          var layer = layui.layer;
+          layer.open({
+            title: ['提示', 'font-size:14px;'],
+            content: content //这里content是一个普通的String
+          });
+        });
+      }
+      function checkForm() {
+        phonenum = $.trim($('#phonenum').val());
+        name = $.trim($('#name').val());
+        id_no = $.trim($('#id_no').val());
+        if (!phonenum || !name || !id_no) {
+          return false;
+        }
+        return true;
+      }
+      $("#complete_btn").click(function () {
+        if (!checkForm()) {
+          popupTipLayer('请输入投资者信息' );
+          return;
+        }
+        // 通知CRM用户适当性通过
+        var data = {
+          'func': 2023,
+          'type': 2,
+          'account':'',
+          'token':'',
+          'data': [{
+            'service': 'adequacy.113',
+            'json': JSON.stringify({
+              INVESTOR_NAM: name,
+              ID_NO: id_no,
+              PHONENUM : phonenum
+            })
+          }]
+        };
+        $.ajax({
+          type: 'post',
+          url: videoConf.crmServerAddr,
+          contentType: 'application/json;charset=utf-8',
+          data: JSON.stringify(data),
+          dataType: 'json',
+          xhrFields: { withCredentials: true },
+          crossDomain: true,
+          success: function (result) {
+            if (result.retHead == 1) {
+              var code = JSON.parse(result.data[0].proxyresult).head.code;
+              var message = JSON.parse(result.data[0].proxyresult).head.message;
+              if (code == 0) {
+                popupTipLayer('投资者适当性已通过');
+              } else {
+                popupTipLayer(message);
+              }
+            } else {
+              popupTipLayer(result.desc);
+            }
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.error(jqXHR);
+          }
+        });
+      });
+      $("#reject_btn").click(function () {
+        if (!checkForm()) {
+          popupTipLayer('请输入投资者信息' );
+          return;
+        }
+        // 通知CRM用户适当性被驳回
+        var data = {
+          'func': 2023,
+          'type': 2,
+          'account':'',
+          'token':'',
+          'data': [{
+            'service': 'adequacy.115',
+            'json': JSON.stringify({
+              INVESTOR_NAM: name,
+              ID_NO: id_no,
+              PHONENUM : phonenum,
+              FILE_TYP: 'INFO_FILE,RECORD_FILE'
+            }),
+          }]
+        };
+        $.ajax({
+          type: 'post',
+          url: videoConf.crmServerAddr,
+          contentType: 'application/json;charset=utf-8',
+          data: JSON.stringify(data),
+          dataType: 'json',
+          xhrFields: { withCredentials: true },
+          crossDomain: true,
+          success: function (result) {
+            if (result.retHead == 1) {
+              var code = JSON.parse(result.data[0].proxyresult).head.code;
+              var message = JSON.parse(result.data[0].proxyresult).head.message;
+              if (code == 0) {
+                popupTipLayer('投资者适当性被驳回');
+              } else {
+                popupTipLayer(message);
+              }
+            } else {
+              popupTipLayer(result.desc);
+            }
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.error(jqXHR);
+          }
+        });
+      });
+      $('#logout_btn').click(function () {
+        $('#username').text('');
+        $('.catch_container').css('display', 'none');
+        $('body').addClass('bgc-white');
+        $('.login_container').css('display', 'block');
+      });
+      $(document).keypress(function(event){
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if($("#loginDiv").css("display")=="block"){
+    	    if(keycode == '13')
+  	        $("#login_btn").click();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

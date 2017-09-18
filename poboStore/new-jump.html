@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/new_file1.css">
+    <link rel="stylesheet" href="css/media.css">
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/url.js"></script>
+    <style>
+        #body{
+            width:90%;
+            margin:0 auto;
+            padding-top:.8rem;
+        }
+        a:hover{
+            color:#6498ff;
+        }
+        #body ul li p{
+            display:inline-block;
+            text-align: center;
+            width:24%;
+        }
+        #body ul li>span{
+            display:inline-block;
+            text-align: center;
+            width:24.3%;
+            padding-top:.2rem;
+        }
+        #body ul li img{
+            display:inline-block;
+            margin-left:.16rem;
+        }
+        #body ul li .s{
+            width:29.3%
+        }
+        #body ul li{
+            margin-bottom: .1rem;
+        }
+        @media screen and (min-width: 320px){
+            #header{
+                width:100%;
+                height:0.35rem;
+                background:#277fc2;
+                text-align:center;
+                color:white;
+                line-height:0.35rem;
+                font-size:0.2rem;
+            }
+            #body ul li p{
+                display:inline-block;
+                text-align: center;
+                width:23%;
+            }
+            #body ul li span{
+                display:inline-block;
+                text-align: center;
+                width:20.3%;
+                padding-top:.2rem;
+            }
+        }
+        @media screen and (min-width: 768px){
+            #body ul li img{
+                display:inline-block;
+                margin-left:.38rem;
+            }
+        }
+        @media screen and (min-width: 770px){
+            #header{
+                display:none;
+
+            }
+        }
+        @media screen and (min-width: 1007px){
+            #body ul li img{
+                display:inline-block;
+                margin-left:.72rem;
+            }
+            #body ul li span{
+                display:inline-block;
+                text-align: center;
+                width:19.3%;
+                padding-top:.2rem;
+            }
+        }
+        @media screen and (min-width: 1024px){
+            #body ul li img{
+                display:inline-block;
+                margin-left:.74rem;
+            }
+        }
+        @media screen and (min-width: 1440px){
+            #body ul li img{
+                display:inline-block;
+                margin-left:1.05rem;
+            }
+        }
+        @media screen and (min-width: 1660px){
+            #body ul li img{
+                display:inline-block;
+                margin-left:1.23rem;
+            }
+        }
+        @media screen and (min-width: 1700px){
+            #body ul li{
+                font-size:.2rem;
+            }
+            #body ul li img{
+                display:inline-block;
+                margin-left:1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="header" class="clearfloat"></div>
+<div id="body">
+    <ul>
+        <li class="li">
+            <p>版本号</p>
+            <p>上传时间</p>
+            <p>下载次数</p>
+            <p>系统</p>
+        </li>
+    </ul>
+</div>
+<script>
+    $(function () {
+        //    获取id/name
+        GetQueryString = function (name) {
+            var urls = decodeURI(window.location.search.substr(1));
+            var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)');
+            var r = urls.match(reg);
+            if (r) return unescape(r[2]);
+            return null;
+        };
+        var treeId =GetQueryString('treeId');
+        var dad={
+            "func": 4,
+            "data":JSON.stringify( {
+                "treeId" : treeId
+            })
+        };
+        $.ajax({
+            type:"POST",
+            url:url()[0],
+            crossDomain: true,
+            data:dad,
+            success:function (data) {
+                var arr=data.data;
+                var str = '';
+                console.log($("title").text());
+                $("#header").text(arr[0].treeName);
+                $("title").text(arr[0].treeName);
+                str = str+'<li>'+'<a class="anp" onclick="conHerf(this)">'+
+                                '<span></span>'+
+                                '<span class="s"></span>'+
+                                '<span></span>'+
+                                '<img src="img/new-And.png">&nbsp;&nbsp;'+'安卓'+'</a>'+ '</li>'+
+                '<li>'+
+                    '<a class="app" onclick="conHerf(this)">'+
+                        '<span></span>'+
+                        '<span class="s"></span>'+
+                        '<span></span>'+
+                        '<img src="img/new-app.png">&nbsp;&nbsp;'+'苹果'+'</a>'+
+                '</li>';
+                $("li").after(str);
+                for(var i=0;i<arr.length;i++){
+                    if(arr[i].type==1){
+                        $(".app").attr({
+                            'href':arr[i].path,
+                            'name':arr[i].id
+                        })
+                        $(".app span:eq(0) ").text(arr[i].version);
+                        $(".app span:eq(2)").text(arr[i].count);
+                        $(".app span:eq(1)").text(arr[i].createTime);
+
+                    }else if(arr[i].type==2){
+                        $(".anp").attr({
+                            'href':arr[i].path,
+                            'name':arr[i].id
+                        })
+                        $(".anp span:eq(0)").text(arr[i].version);
+                        $(".anp span:eq(2)").text(arr[i].count);
+                        $(".anp span:eq(1)").text(arr[i].createTime);
+                    }
+
+                }
+                console.log(arr)
+            }
+        })
+    });
+    function conHerf(_this) {
+        var iid=$(_this).attr('name');
+        console.log(iid)
+        var daa = {
+            "func": 3,
+            "data": JSON.stringify({
+                "id" : iid
+            })
+        };
+        $.ajax({
+            type:"POST",
+            url:url()[0],
+            crossDomain: true,
+            data:daa,
+            success:function (data) {
+                var arr=data.data;
+                console.log(data)
+            },
+            erroe:function (err) {
+                console.log("服务器异常")
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

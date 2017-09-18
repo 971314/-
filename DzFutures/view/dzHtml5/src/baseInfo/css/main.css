@@ -1,0 +1,252 @@
+html, body{font-family:Helvetica,"Microsoft YaHei",Arial,sans-serif;background:#efeff4;}
+.navInfo{ width:100%;height:44px;background:#c40322;line-height: 44px;min-height:44px }
+.login-nav{text-align: center;float:left;width:69%;color:#ffffff;font-size:20px; line-height: 44px;}
+.titleBack{text-align: center;float:left;width:15%;}
+.initHeight{height:1px;}
+.list-ul{background: #ffffff; margin-top: 17px;border-top: solid 1px #d9d9d9; border-bottom: solid 1px #d9d9d9;height: 90px;}
+ul li{list-style: none}
+.myInfoDiv .list-ul li{height: 45px; line-height: 45px; margin-left: -25px;}
+.list-ul li{height: 45px; line-height: 42px; margin-left: -25px;}
+.login-bottom{border-bottom: solid 1px #d9d9d9;}
+.login-leftDiv{width:21.49%; float: left;font-size: 17px; color: #000000;}
+.login-rightDiv{float: left; width: 74%;font-size: 17px; color: #000000;}
+.loginText{ height: 39px; border: none;font-size: 14px; color: #333;line-height:39px}
+.loginText:focus{ outline: 0;}
+.liLineHeight{line-height: 43px !important;}
+.tLineHeight{line-height: 38px !important;}
+.div3{width: 13%; padding-left: 19px;float:left;}
+.div3 img{width: 22px; height: 13px;}
+.btnSubmit{width: 89%;
+    display: inline-block;
+    padding: 6px 9px;
+    font-size: 17px;
+    color: #ffffff;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    margin-top: 4px;
+    background-color: #c40322;}
+.btnSubmit:focus{
+    border-color: #c40322;
+    outline: 0;
+}
+.btnRegister{
+    width:89%;
+    display: inline-block;
+    padding: 6px 9px;
+    font-size: 17px;
+    color: #c40322;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    border-radius: 4px;
+    margin-top: 4px;
+    background: #efeff4;
+    border: solid 1px #c40322;
+}
+.btnRegister:focus{
+    border-color: #c40322;
+    outline: 0;
+}
+.registerInitBtn{
+    width: 89%;
+    display: inline-block;
+    padding: 6px 9px;
+    font-size: 17px;
+    color: #fff;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    border-radius: 4px;
+    margin-top: 4px;
+    background: #c0c0c0;
+    border: solid 1px #c0c0c0;
+}
+.registerInitBtn:focus{
+    border-color: #c0c0c0;
+    outline: 0;
+}
+.btnDiv{text-align: center;  margin-top: 22px;}
+.registerDiv{text-align: center; margin-top: 16px;}
+.registerLeft{ float: left; width: 85%;height: 40px; }
+.initMsg{ display: block; background: #ffffff; height: 30px;  line-height: 38px; margin-top: 4px;   color: #c40322; font-size: 13px;border-radius: 4px;
+    width: 85px; }
+.title{text-align: center}
+.leftDiv{float:left;width:50%;font-size: 13px;color:#c40322;text-decoration: underline;}
+.rightDiv{float:left;width:46%;font-size: 13px;color:#c40322;text-align: right;text-decoration: underline;}
+.btnDiv2{height: 23px; width: 95%;  margin-left: auto; margin-right: auto;  margin-top: 22px;}
+.btnDiv3{height: 23px;  width: 95%; margin-left: auto; margin-right: auto; margin-top: 35px;  font-size: 16px;  color: #c40322;  text-align: center;}
+.textUnderLine{text-decoration: underline}
+.stepFourDiv{width:100%;text-align: center; }
+.stepFourDiv img{width:56.5px;height:56.5px}
+.span1{ margin-top: 16px; font-size: 17px; color: #87c33f;}
+.span2{ margin-top: 7px; color: #1a1a1a; font-size: 15px;}
+.photoImg{width:45px;height:45px}
+.myPhotoLeft{width: 19%;float: left;line-height: 66.5px;}
+.photoBox{border: solid 1px #e9ebee; height: 22px;  width: 104px; border-radius: 4px; margin-top: -6px;}
+.pDiv1{float: left; width: 33px; height: 22px;    text-align: center;}
+.pDiv1 img{ width: 16px; height: 12px; margin-top: -24px;}
+.pDiv2{float: left; width: 69px; height: 22px;  font-size: 11px; line-height: 22px;color:#c0c6cd;padding-left: 5px;}
+.splitLine{width: 9px; float: left;border-right: 1px solid #d9d9d9;  margin-left: -11px;  height: 16px; margin-top: 2px;}
+.imgLeft{width: 7px; height: 13px;}
+.div3Left{width: 15%; text-align: center;float:left;}
+.myInfoImgOne{width: 17px; height: 15px;}
+.myInfoImgTwo{width: 18px; height: 18.5px;}
+.myInfoImgThree{width: 17px; height: 18.5px;}
+.myInfo-leftDiv{float:left;width: 11%;}
+.myInfo-rightDiv{float:left; width: 74%;color: #1a1a1a; font-size: 15px;}
+.outLogin{height: 43px; margin-top: 15px; background-color: #ffffff; border-top: 1px solid #d9d9d9; border-bottom: 1px solid #d9d9d9; margin-bottom: 56.5px;
+    text-align: center; font-size: 17px; color: #1a1a1a;}
+.linkColor{color:#1a1a1a}
+.widthDiv{width: 85%;}
+.divChildLeft{position: absolute;  left:7px; width: 98px;  height: auto; color: #1a1a1a; font-size: 17px;text-align: right;
+    text-align-last: justify;  text-indent: 10px;}
+.divChildRight{ margin-left: 123px; height: auto;     color: #1a1a1a; font-size: 17px;}
+.divParent{position: relative; width:95%; margin: 10px auto 11px;}
+.confirmDivLeft{float: left; width: 8%;}
+.confirmDivRight{float: left; width: 89%; font-size: 14px; color: #1a1a1a;}
+.confirmDiv{width:92%;margin-left:auto;   margin-top: 37px; margin-bottom: 66px;}
+.checkBoxImg{width:11.5px;height:11.5px;margin-top: -4px;}
+.detail{color:#808086;font-size:14px;margin-top:37px}
+.upFileDiv{width:100%;margin-top: 30px;text-align: center}
+.borderDashed{position:relative;border: dashed 1px #c40322; height: 85.5px; width: 60%; margin-left: auto; margin-right: auto;margin-bottom: -25px;}
+.addInitUp{width:25px;height:24px;}
+.upFileP1{margin-bottom: 18px; margin-top: 20px;}
+.upFileP2{color: #808086; font-size: 12px;}
+.uploadFile{position: absolute; width: 100%;  height: 85.5px; opacity: 0;}
+.exitFile{position: relative; height: 85.5px; width: 60%;  margin-left: auto; margin-right: auto; margin-bottom: -25px;}
+.exitFileImg{width: 100%; height: 88.5px;}
+.deal{color:#c40322}
+.dialog-info{top: 29%;  bottom: 0; left: 0;  right: 0;  margin: auto;  width: 92%;}
+.text-align{text-align: center;margin: 0 auto;padding-top: 10px;}
+.dialog-bottom{text-align: center; font-size: 15px;  color: #313131;}
+.exponent{height:71px;width:100%;border-bottom: solid 1px #d9d9d9;border-top:solid 1px #d9d9d9;margin-top: 7px;  background: #fff;}
+.exponentDiv{width:33.3%;height:71px;float:left; text-align: center;line-height: 9px;}
+.exponentName{font-size:14px;color:#1a1a1a; margin-top: 10px;}
+.upDownImg{width:6px;height:3.5px;margin-top: -8px;}
+.upRed{font-size:20px;color:#fe0000;margin-left: 1px;}
+.downGreen{font-size:20px;color:#14a238;margin-left: 1px;}
+.stopGray{font-size:20px;color:#c0c6cd}
+.upRedValue{font-size:13px;color:#fe0000;}
+.downGreenValue{font-size:13px;color:#14a238}
+.stopGrayValue{font-size:13px;color:#c0c6cd}
+.pInfo{ margin-top: 12px; margin-bottom: 8px;}
+.spanDiv1{width: 46%; float: left; text-align: right}
+.spanDiv2{width:8%;float: left; height: 1px;}
+.spanDiv3{width: 46%; float: left; text-align: left}
+/*height:213px*/
+.centerInfo{width:100%; margin-bottom:6px;   height: auto;  border-bottom: solid 1px #d9d9d9;border-top:solid 1px #d9d9d9;margin-top: 6px;  background: #fff;}
+.exitLogin{width:95%; height:45px;  border: solid 1px #d9d9d9; margin-top: 10px; margin-left: auto; margin-right: auto; border-radius: 6px;}
+.exitLogin1{width:37%;float:left;}
+.exitLogin2{width:1%;float:left;}
+.exitLogin3{width:62%;float:left;}
+.exitLoginImg{width:28px;height:28px ; margin-left: 6px; margin-top: -5px;}
+.loginSplitLine{height:36px;border-right: 1px solid #d9d9d9; margin-top: 4px;}
+.exitLoginInfo1{font-size:15px;color:#1a1a1a; line-height: 43px; margin-left: 7px;}
+.exitLoginInfo2{font-size:12px;color:#666666}
+.infoDivP{position: relative; width:63%;    padding-left: 10px; margin: 1px auto 22px;height:45px; display:table; }
+.infoDivLeft{position: absolute; left: 0; width: 98px;  margin-top: 12px; margin-left: 6px; }
+.infoDivRight{ padding-left: 49px;  vertical-align: middle; display: table-cell; }
+/*// height: auto;*/
+.rowList{width: 25%;float: left; margin-top: -11px;}
+.wrapper{ position:relative;  padding-top:40px;  padding-bottom:56.25%;  height:0; text-align: center; }
+.wrapper p{position: absolute;  bottom: 0;  padding: 0; color: #666666;  font-size: 13px; left: 0; right: 0;}
+.imgOne{
+    position:absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height:100%;
+    background: url(../../baseInfo/image/index/openInit.png)no-repeat 50%  39%;
+    background-size: 42%;
+}
+.imgTwo{
+    position:absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height:100%;
+    background: url(../../baseInfo/image/index/billInit.png)no-repeat 50% 39%;
+    background-size: 42%;
+}
+.imgThree{
+    position:absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height:100%;
+    background: url(../../baseInfo/image/index/financeInit.png)no-repeat  50% 39%;
+    background-size: 42%;
+}
+.imgFour{
+    position:absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height:100%;
+    background: url(../../baseInfo/image/index/priceInit.png)no-repeat 50% 39%;
+    background-size: 42%;
+}
+.listInfoDiv{width:100%; height: auto;position: absolute; background: #fff;border-bottom: solid 1px #d9d9d9;border-top:solid 1px #d9d9d9;}
+.list-P1{font-size: 11px;color:#d9a23f;}
+.list-P2{font-size: 12px;color:#666666;}
+.list-P3{font-size:14px;color:#1a1a1a;font-weight: bold;margin-top: -9px;}
+.list-P4{font-size:12px;color:#666666;}
+.list-P5{font-size:10px;color:#666666;border: solid 1px #d9d9d9;border-radius: 10px;height: 22px; line-height: 22px;
+    width: 73%;text-align: left; padding-left: 8px;}
+.listSplitLine{ height: 66px;  border-right: 1px solid #d9d9d9; margin-top: -8px;}
+.listRow{line-height: 12px; padding: 15px 18px;width:95%; height:80px; border: solid 1px #d9d9d9; margin-top: 10px; margin-left: auto;
+    margin-right: auto; border-radius: 6px;}
+.splitLineS{background: #efefef;width:100%;height:3px;}
+.widthOne{width:100%}
+.clearBoth{clear: both}
+.imgLeftOne{border:solid 1px red;width:20%;float:left}
+.rightDivOne{border:solid 1px blue;width:80%;float:left}
+.loginBtn{width:95%; height:45px;  line-height: 45px; margin:10px auto 10px auto; text-align: center; border: solid 1px #eecb3f;   border-radius: 6px;}
+.notLoginImg{width:18px;height:18px;margin-top: -5px;}
+.notLoginFont{font-size:17px;color:#eecb3f; margin-left: 7px;}
+.textUnderLine a{color:#c40322}
+.widthTwo{width: 275px}
+.modifyOne{width: 87%; text-align: right; margin: 14px auto -32px auto; color: #c40322; font-size: 14px; text-decoration: underline;}
+.modifyOne a{color: #c40322}
+.nextStepBind{ width: 16%; float: left; text-align: center;  font-size: 15px; color: #fff;}
+.nextStepBind a{color: #fff;text-decoration: none}
+.pTipOne{  margin-bottom: 3px;}
+.sucBg{background: #fff;height:181px;margin:0}
+.sucImgTop{margin-top:40px}
+/*点击的时候触发颜色*/
+/*.clickChange:active .myInfo-rightDiv{color:#c40322;}*/
+/*.clickChange:active:focus,*/
+.clickChange .myInfo-rightDiv:active {
+    color: #c40322;
+}
+/*.tesss a:active.myInfoImgTwo{ position:absolute;*/
+    /*top: 0;*/
+    /*left: 0;*/
+    /*width: 100%;*/
+    /*height:100%;*/
+    /*background: url(../../baseInfo/image/index/priceInit.png)no-repeat 50% 39%;*/
+    /*background-size: 42%;}*/
+.onlinePhone{  position: fixed;  margin: auto; left: 0;  right: 0; bottom: 0; width: 150px; }
+.onlinePhoneImg{  width: 145px; height: 54px; }
+.tipMsg{text-align: center; padding-top: 13px;
+    font-size: 14px; color: #808086;}
+.tipMsg p{margin-bottom: 2px;}
+
