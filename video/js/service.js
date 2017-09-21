@@ -643,18 +643,20 @@ CRVideo_EnterMeetingRslt.callback = function (sdkErr) {
     g_meeting = true;
     CRVideo_SetPicResource(g_logo_id,{
       "fmt":"picdat",
-      "dat":"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"
+      "dat":"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"
     });
     if (g_call_video === undefined) {
       g_call_video = CRVideo_CreatVideoObj();
       g_call_video.width(628)
       g_call_video.height(471)
+      g_call_video.keepAspectRatio(true);
       $(".video-guest").append(g_call_video.handler())
     }
     if (g_me_video === undefined) {
       g_me_video = CRVideo_CreatVideoObj();
       g_me_video.width(289)
       g_me_video.height(216)
+      g_me_video.keepAspectRatio(true);
       $(".video-host").append(g_me_video.handler())
     }
     if (g_me_media === undefined) {
@@ -735,7 +737,7 @@ CRVideo_NotifyCmdData.callback = function (sourceUserId,data) {
 //挂断呼叫操作成功响应
 CRVideo_HangupCallSuccess.callback = function (callID,cookie) {
   // console.log("CRVideo_HangupCallSuccess(callID:%s)",callID);
-  CRVideo_ExitMeeting();
+  CRVideo_StopMeeting(g_meet_id);
   g_session_call_id = null;
   if (g_record_timer != -1) {
     clearInterval(g_record_timer);
@@ -763,7 +765,7 @@ CRVideo_HangupCallFail.callback = function (callID,sdkErr,cookie) {
 //SDK通知自己呼叫被挂断
 CRVideo_NotifyCallHungup.callback = function (callID,usrExtDat) {
   // console.log("CRVideo_NotifyCallHungup(callID:%s)",callID);
-  CRVideo_ExitMeeting();
+  CRVideo_StopMeeting(g_meet_id);
   g_session_call_id = null;
   if (g_record_timer != -1) {
     clearInterval(g_record_timer);
@@ -788,6 +790,9 @@ CRVideo_NotifyCallHungup.callback = function (callID,usrExtDat) {
   });
   popupTipLayer("对方挂断了呼叫");
 }
+CRVideo_EndMeetingRslt.callback = function (sdkErr) {
+
+};
 CRVideo_VideoStatusChanged.callback = function (userID,oldStatus,newStatus) {
   // console.log("CRVideo_VideoStatusChanged(userID:%s,oldStatus:%s,newStatus:%s)",userID,oldStatus,newStatus);
   updateRecord();
