@@ -39,7 +39,7 @@ function updateQue(status) {
     var item = g_que_dict[name];
     if (item["queId"] == status.queID) {
       if (g_login_type == 2) {
-        item["expertNum_span"].text(status.agent_num);
+        // item["expertNum_span"].text(status.agent_num);
         item["queNum_span"].text(status.wait_num);
         item["srvNum_span"].text(status.srv_num);
       } else {
@@ -50,7 +50,6 @@ function updateQue(status) {
   }
 }
 
-var audio = document.getElementById('audio');
 //删除请求服务用户层
 function removeUserSrvLayer() {
   if (g_user_srv_layer_index != -1) {
@@ -60,10 +59,6 @@ function removeUserSrvLayer() {
       g_user_srv_layer_index = -1;
     })
   }
-  if (!audio.paused) {
-    audio.pause();
-    audio.load();
-  }
 }
 //弹出请求服务用户层
 function popupUserSrvLayer(user) {
@@ -71,9 +66,6 @@ function popupUserSrvLayer(user) {
     var layer = layui.layer;
     if (g_user_srv_layer_index != -1) {
       layer.close(g_user_srv_layer_index);
-    }
-    if (audio.paused) {
-      audio.play();
     }
     g_user_srv_layer_index = layer.open({
       type : 0,
@@ -93,17 +85,9 @@ function popupUserSrvLayer(user) {
           g_call_user_que = user.queID;
           CRVideo_CreateMeeting(videoConf.meetingSubject)
           g_user_srv_layer_index = -1;
-          if (!audio.paused) {
-            audio.pause();
-            audio.load();
-          }
           popupLodingLayer();
       }.bind(this),
       btn2: function (index, layero){
-        if (!audio.paused) {
-          audio.pause();
-          audio.load();
-        }
         layer.close(index);
         CRVideo_RejectAssignUser(user.queID, user.usrID);
         g_user_srv_layer_index = -1;
@@ -157,10 +141,27 @@ function popupUserQueLayer(user) {
     });
   });
 }
+var oneTouchFlag = false;
 function oneTouch() {
-  $('.start_server_open_server').click();
+  if (socket.readyState != 1) {
+    popupTipLayer('您与服务器的连接已断开，请重新登录');
+  } else {
+    $('.start_server_open_server').each(function (index) {
+      if (oneTouchFlag) {
+        if ($(this).text() == '服务中...') {
+          $(this).click();
+        }
+      } else {
+        if ($(this).text() == '请开启服务') {
+          $(this).click();
+        }
+      }
+    });
+    oneTouchFlag = !oneTouchFlag;
+  }
 }
 function jsoncallback(result) {
+  loginForPair();
   var que_info = result.Data.queueList;
   //初始化坐席业务列表
   g_que_dict = {};
@@ -168,11 +169,11 @@ function jsoncallback(result) {
   var queInfos_length = que_info.length;
   for (var i = 0;i < queInfos_length;i++) {
     var item = que_info[i];
-    var queDesc = item.QueDesc ? item.QueDesc.split('-') : item.desc.split('-');
+    var queueDesc = item.QueDesc ? item.QueDesc.split('-') : item.desc.split('-');
     var departmentList_length = g_department_list.length;
     var hasQueue = false;
     for (var ii = 0; ii < departmentList_length; ii++) {
-      if (queDesc[0] !== videoConf.institution || queDesc[1] !== g_department_list[ii].DEPARTMENT_ID) {
+      if (queueDesc[0] !== videoConf.institution || queueDesc[1] !== g_department_list[ii].DEPARTMENT_ID) {
         continue;
       } else {
         hasQueue = true;
@@ -201,8 +202,9 @@ function jsoncallback(result) {
       li.append(srvNum_span);
 
       var srvStatus_span = $("<span/>")
-      var btn = $("<span id=\"srv_open_btn_"+queueId+"\" class=\"start_server_open_server\">请开启服务</span>")
+      var btn = $("<span id=\"srv_open_btn_"+queueDesc[1]+"\" class=\"start_server_open_server\">请开启服务</span>")
       if (getServicedById(queueId)) {
+        openChannel(queueDesc[1]);
         btn.text("服务中...");
         btn.addClass("active");
       } else {
@@ -215,21 +217,32 @@ function jsoncallback(result) {
       var priority_span = $("<span>"+queuePriority+"</span>")
       li.append(priority_span);
 
-      g_que_dict[btn.attr("id")] = {"queId":queueId,"expertNum_span":expertNum_span,"queNum_span":queNum_span,"srvNum_span":srvNum_span,"srvStatus_span":srvStatus_span};
+      g_que_dict[btn.attr("id")] = {"queId":queueId,"queName": queueName,"queDesc": queueDesc[1],"expertNum_span":expertNum_span,"queNum_span":queNum_span,"srvNum_span":srvNum_span,"srvStatus_span":srvStatus_span};
 
       $('#start_server_list').append(li)
 
       btn.click(function (e) {
-        queData = g_que_dict[$(this).attr("id")];
-        var queID = queData["queId"];
-        if (getServicedById(queID)) {
-          CRVideo_StopService(queID);
-          $(this).text("请开启服务");
-          $(this).removeClass("active");
+        if (socket.readyState != 1) {
+          popupTipLayer('您与服务器的连接已断开，请重新登录');
         } else {
-          CRVideo_StartService(queID);
-          $(this).text("服务中...");
-          $(this).addClass("active");
+          var queData = g_que_dict[$(this).attr("id")];
+          var queDesc = queData["queDesc"];
+          var queName = queData["queName"];
+          if ($(this).text() == '服务中...') {
+            closeChannel(queDesc, queName);
+            delete(openedChannel[queDesc]);
+            $(this).text("请开启服务");
+            $(this).removeClass("active");
+            queData["expertNum_span"].text('0');
+          } else {
+            openChannel(queDesc, queName);
+            openedChannel[queDesc] = {};
+            openedChannel[queDesc].queDesc = queDesc;
+            openedChannel[queDesc].queName = queName;
+            $(this).text("服务中...");
+            $(this).addClass("active");
+            queData["expertNum_span"].text('1');
+          }
         }
       });
     } else {
@@ -251,7 +264,7 @@ function jsoncallback(result) {
       $('#queue_list').append(li)
 
       li.click(function (e) {
-        queData = g_que_dict[$(this).attr("id")];
+        var queData = g_que_dict[$(this).attr("id")];
         var queID = queData["queId"];
         CRVideo_StartQueuing(queID);
         popupUserQueLayer();
@@ -259,18 +272,18 @@ function jsoncallback(result) {
     }
   }
 
+  popLoadSrvLayer();
   if (g_login_type == 2) {
-    setSrvDNDState(0)
-
-    $(".start_server_footer_right").click(function (e) {
-      CRVideo_ReqAssignUser();
-    })
-
-    $("#start_server_disturb").click(function (e) {
-      var checkVal = $("input[type='checkbox']").is(':checked');
-      setSrvDNDState(checkVal)
-    })
-
+    // setSrvDNDState(0)
+    //
+    // $(".start_server_footer_right").click(function (e) {
+    //   CRVideo_ReqAssignUser();
+    // })
+    //
+    // $("#start_server_disturb").click(function (e) {
+    //   var checkVal = $("input[type='checkbox']").is(':checked');
+    //   setSrvDNDState(checkVal)
+    // })
     if ($('.start_server_open_server').length > 1) {
       $('#one_touch_btn').css('visibility', 'visible');
     }
@@ -375,21 +388,34 @@ CRVideo_QueuingInfoChanged.callback = function (queuingInfo) {
 //列队状态改变
 CRVideo_QueueStatusChanged.callback = function (queStatus) {
   // console.log("CRVideo_QueueStatusChanged(queStatus(queID:%s,agent_num:%s,srv_num:%s,wait_num:%s))",queStatus.queID , queStatus.agent_num , queStatus.srv_num , queStatus.wait_num);
-  updateQue(queStatus);
+  // updateQue(queStatus);
 }
 //开启队列服务响应
 CRVideo_StartServiceRslt.callback = function (queID,sdkErr,cookie) {
+  console.log("CRVideo_StartServiceRslt(queID:%s,sdkErr:%s)",queID,sdkErr);
   if (sdkErr == CRVideo_NOERR) { //开始服务队列，更新该队列的状态信息
-    var status = CRVideo_GetQueueStatus(queID);
-    updateQue(status);
+  //   var status = CRVideo_GetQueueStatus(queID);
+  //   updateQue(status);
+    popupLodingLayer();
+    startServiceTimer();
   }
 }
 //停止队列服务响应
 CRVideo_StopServiceRslt.callback = function (queID, sdkErr, cookie) {
+  console.log("CRVideo_StopServiceRslt(queID:%s,sdkErr:%s)",queID,sdkErr);
 }
 //系统自动安排客户
 CRVideo_AutoAssignUser.callback = function (usr) {
-  popupUserSrvLayer(usr);
+  // popupUserSrvLayer(usr);
+  var infoArr = usr.usrID.split('|');
+  g_user_data = {
+    INVESTOR_NAM: infoArr[1],
+    ID_NO: infoArr[2],
+    PHONENUM : infoArr[0]
+  };
+  g_call_user_id = usr.usrID;
+  g_call_user_que = usr.queID;
+  CRVideo_CreateMeeting(videoConf.meetingSubject)
 }
 //请求分配客户操作结果
 CRVideo_ReqAssignUserRslt.callback = function (errCode,usr,cookie) {

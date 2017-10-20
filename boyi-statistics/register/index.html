@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>博易app后台统计 - 注册</title>
+</head>
+<style>
+    body{
+        font-size: 25px;
+    }
+.reg{
+    width: 46%;
+    height: 20rem;
+    position: absolute;
+    top: 35%;
+    left: 47%;
+    margin-top: -4rem;
+    margin-left: -14%;
+}
+span{
+    display:inline-block;
+}
+    .reg>span{
+        width:100%;
+        margin-left:17rem;
+        margin-bottom: 2rem;
+    }
+    .reg div{
+        margin-left:9rem;
+    }
+    .block{
+        display: block;
+        padding-bottom: 1rem;
+    }
+    input{
+        margin-left:2rem;
+        width:45%;
+        height:2rem;
+        border:1px solid black;
+    }
+    .button{
+        margin-left:8.2rem;
+    }
+    .m25{
+        margin-left:25px;
+    }
+    .m16{
+        margin-left: 14px;
+    }
+    #reg > span{
+        text-align: center;
+        width:54%;
+        height:2.5rem;
+        line-height: 2.5rem;
+        background-color: #669ae1;
+        color: white;
+        cursor: pointer;
+    }
+</style>
+<body>
+    <div class="reg">
+        <span class="block">博易app后台统计 - 注册</span>
+        <div>
+            <span class="block"><span>用<span class="m16"></span>户<span class="m16"></span>名</span><input type="text"  id="name"/></span>
+            <span class="block"><span>密<span class="m25"></span><span class="m25"></span>码</span><input type="password"id="pwd"/></span>
+            <span class="block"><span >机构名称</span><input type="text" id="orgName"/></span>
+            <span class="block"><span >机构编码</span><input type="text" id="orgNumber"/></span>
+            <span class="block"></span>
+            <span class="block button" id="reg"><span>注册</span></span>
+        </div>
+    </div>
+<script src="jquery-2.2.0.min.js"></script>
+<script>
+    $('#reg').click(function () {
+        var data = {
+            "func":103,
+            "data": {
+                "name" : $('#name').val(),
+                "pwd" : $('#pwd').val(),
+                "orgNumber" : $('#orgNumber').val(),
+                "orgName" : $('#orgName').val()
+            }
+        };
+        $.ajax({
+            url: 'http://192.168.6.49:8080/UserStatistics/WebService',
+            type: 'POST',
+            contentType: 'application/json',
+            crossDomain: true,
+            data:JSON.stringify(data),
+            success: function (data) {
+                if(data.retHead == 0){
+                    alert('注册成功')
+                }
+            }, error: function (data) {
+                console.log("服务器异常");
+            }
+        })
+    })
+</script>
+</body>
+</html>

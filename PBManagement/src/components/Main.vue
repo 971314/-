@@ -68,12 +68,8 @@
           window.sessionStorage.setItem('menuTree', '');
           websocket && websocket.close();
         } else if (key.indexOf('http') == 0) {
-          if (key != window.sessionStorage.getItem('subsystemUrl')) {
-            window.sessionStorage.setItem('subsystemUrl', key);
-            this.$router.replace('/subsystem/' + new Date().getTime());
-          }
-        } else {
-          window.sessionStorage.setItem('subsystemUrl', '');
+          window.sessionStorage.setItem('subsystemUrl', key);
+          this.$router.replace('/subsystem/' + new Date().getTime());
         }
       },
       setMenu (menuTree) {

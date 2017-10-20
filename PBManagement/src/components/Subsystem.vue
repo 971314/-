@@ -16,9 +16,9 @@ export default {
       let userInfo = JSON.parse(window.sessionStorage.getItem('userInfo'));
       let subsystemUrl = window.sessionStorage.getItem('subsystemUrl');
       let pageUrl = subsystemUrl + '?uid=' + userInfo.userId + '&token=' + escape(userInfo.token);
-      if (pageUrl != this.pageUrl) {
+      // if (pageUrl != this.pageUrl) {
         this.pageUrl = pageUrl;
-      }
+      // }
     }
   },
   mounted () {
@@ -34,6 +34,6 @@ export default {
     margin-bottom: -4px;
     border: none;
     width: 100%;
-    min-height: 670px;
+    min-height: 840px;
   }
 </style>

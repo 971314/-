@@ -174,11 +174,7 @@
   width: 900px;
 }
 #start_server_list{
-  -webkit-margin-before: 0em;
-  -webkit-margin-after: 0em;
-  -webkit-margin-start: 0px;
-  -webkit-margin-end: 0px;
-  -webkit-padding-start: 0px;
+  margin-bottom: 20px;
 }
 #start_server_list li{
   display: table;

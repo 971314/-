@@ -59,7 +59,7 @@ function getDepartmentList() {
           CRVideo_Login(cr_account,cr_psw,g_nick_name,g_user_id,"");
           popupLodingLayer();
         } else {
-          popupTipLayer('没有查询到所属部门，无法登陆');
+          popupTipLayer('没有查询到所属部门及下级部门的双录通道，无法登陆');
         }
       } else {
         popupTipLayer(result.desc);

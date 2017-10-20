@@ -26,6 +26,7 @@ a {
   color: #bfcbd9;
 }
 .el-menu--horizontal>.navbar-brand {
+  -webkit-transition: none;
   transition: none;
 }
 .el-menu--horizontal>.navbar-brand:hover {
@@ -59,7 +60,7 @@ a {
   background-color: #fff;
 }
 .container>div {
-  min-height: 600px;
+  min-height: 800px;
 }
 .menus {
   position: absolute;

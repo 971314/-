@@ -60,14 +60,16 @@ var updateRecord = function () {
       videoBContent["param"] = {"camid":g_me_user_id+"."+CRVideo_GetDefaultVideo(g_me_user_id)};
       recContents.push(videoBContent);
 
-      videoBlogoContent["type"] = CRVideo_REC_VCONTENT_TYPE.RECVTP_PIC;
-      videoBlogoContent["left"] = w/2 + 3;
-      videoBlogoContent["top"] = 3;
-      videoBlogoContent["width"] = 32;
-      videoBlogoContent["height"] = 32;
-      videoBlogoContent["param"] = {"resourceid":g_logo_id};
-      videoBlogoContent["keepAspectRatio"] = 1;
-      recContents.push(videoBlogoContent);
+      if (videoConf.videoLogo) {
+        videoBlogoContent["type"] = CRVideo_REC_VCONTENT_TYPE.RECVTP_PIC;
+        videoBlogoContent["left"] = w/2 + 3;
+        videoBlogoContent["top"] = 3;
+        videoBlogoContent["width"] = 32;
+        videoBlogoContent["height"] = 32;
+        videoBlogoContent["param"] = {"resourceid":g_logo_id};
+        videoBlogoContent["keepAspectRatio"] = 1;
+        recContents.push(videoBlogoContent);
+      }
 
       videoBStampContent["type"] = CRVideo_REC_VCONTENT_TYPE.RECVTP_TIMESTAMP;
       videoBStampContent["left"] = w/2 + 35;
@@ -243,14 +245,18 @@ function completeVideo() {
 }
 $("#video_undone_btn").click(function () {
   if (!g_hanging_up) {
-    g_hanging_up = true;
-    rejectAppropriateness();
+    if (confirm('确定驳回该客户适当性？')) {
+      g_hanging_up = true;
+      rejectAppropriateness();
+    }
   }
 })
 $("#video_done_btn").click(function () {
   if (!g_hanging_up) {
-    g_hanging_up = true;
-    checkAttachment(false);
+    if (confirm('确定通过该客户适当性？')) {
+      g_hanging_up = true;
+      checkAttachment(false);
+    }
   }
 })
 
@@ -270,7 +276,7 @@ $("#record_btn").click(function () {
 
     var size = record_size_arr[10];
     var frame = 15;
-    var zhiliang = 26;
+    var zhiliang = 22;
 
     CRVideo_StartRecordIng(g_location_dir+"record/"+recordName,CRVideo_RECORD_AUDIO_TYPE.REC_AUDIO_TYPE_ALL,frame,size[0],size[1]/2,size[2]*1000,zhiliang,7);
 
@@ -631,6 +637,7 @@ var g_logo_id = "6cb4d64a-5647-11e7-bbc9-989096d01cf2"//logo id
 //进入会议结果
 CRVideo_EnterMeetingRslt.callback = function (sdkErr) {
   removeLodingLayer();
+  startMeeting();
   clearUserInfo();
   if (sdkErr == CRVideo_NOERR) {
     getUserBasicInfo();
@@ -641,10 +648,12 @@ CRVideo_EnterMeetingRslt.callback = function (sdkErr) {
     $('.queue_container').css('display',"none");
     $(".meeting_container").css("display","block")
     g_meeting = true;
-    CRVideo_SetPicResource(g_logo_id,{
-      "fmt":"picdat",
-      "dat":"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"
-    });
+    if (videoConf.videoLogo) {
+      CRVideo_SetPicResource(g_logo_id,{
+        "fmt":"picdat",
+        "dat":videoConf.videoLogo
+      });
+    }
     if (g_call_video === undefined) {
       g_call_video = CRVideo_CreatVideoObj();
       g_call_video.width(628)
@@ -737,7 +746,9 @@ CRVideo_NotifyCmdData.callback = function (sourceUserId,data) {
 //挂断呼叫操作成功响应
 CRVideo_HangupCallSuccess.callback = function (callID,cookie) {
   // console.log("CRVideo_HangupCallSuccess(callID:%s)",callID);
+  CRVideo_ExitMeeting();
   CRVideo_StopMeeting(g_meet_id);
+  stopMeeting();
   g_session_call_id = null;
   if (g_record_timer != -1) {
     clearInterval(g_record_timer);
@@ -765,7 +776,9 @@ CRVideo_HangupCallFail.callback = function (callID,sdkErr,cookie) {
 //SDK通知自己呼叫被挂断
 CRVideo_NotifyCallHungup.callback = function (callID,usrExtDat) {
   // console.log("CRVideo_NotifyCallHungup(callID:%s)",callID);
+  CRVideo_ExitMeeting();
   CRVideo_StopMeeting(g_meet_id);
+  stopMeeting();
   g_session_call_id = null;
   if (g_record_timer != -1) {
     clearInterval(g_record_timer);

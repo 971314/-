@@ -116,6 +116,7 @@ window.onbeforeunload = function () {
 }
 //注销
 function logout() {
+  logoutForPair();
   CRVideo_Logout();
   CRVideo_Uninit();
   g_is_init = false;
