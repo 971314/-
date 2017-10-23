@@ -31,12 +31,12 @@ function initSocket() {
     }, 15000);
   }
 }
-function startHeartbeat() {
+function startHeartbeat(action) {
   if (!heartbeatTimer) {
     heartbeatTimer = setInterval(function () {
       if (socket && socket.readyState == 1) {
         var params = {
-          action: 'REQ_WORKING_FINISH',
+          action: action,
           body: {}
         };
         socket.send(JSON.stringify(params));
@@ -67,14 +67,14 @@ function loginForPair() {
     switch (rspData.action) {
       case 'RSP_MATCH_SUCCESS':
         if (rspData.errCode == 0 && rspData.body.brokerId == videoConf.institution) {
-          // clearHeartbeat();
+          clearHeartbeat();
           var user = g_que_dict['srv_open_btn_' + rspData.body.channelId].queName + '|' + rspData.body.userName;
           popPoboSrvLayer(user, rspData.body.channelId);
         }
         break;
       case 'RSP_ACCEPT_MATCH':
           if (rspData.errCode == 0) {
-            startService();
+            // startService();
           } else {
             popupTipLayer(rspData.errMsg);
           }
@@ -92,6 +92,10 @@ function loginForPair() {
         removeLodingLayer();
         stopService();
         // startHeartbeat();
+        break;
+      case 'RSP_WORKING_FINISH':
+      case 'RSP_CALL_ENTRY_FAILURE':
+        clearHeartbeat();
         break;
       default:
         break;
@@ -164,14 +168,15 @@ function popPoboSrvLayer(user, channelId) {
       btn: ['<p style="font-size:14px;">确定</p>','<p style="font-size:14px;">取消</p>'],
       yes: function (index, layero){
           layer.close(index);
-          var params = {
-            action: 'REQ_ACCEPT_MATCH',
-            body: {
-              channelId: channelId
-            }
-          };
-          socket.send(JSON.stringify(params));
           g_current_channel_id = channelId;
+          startService();
+          // var params = {
+          //   action: 'REQ_ACCEPT_MATCH',
+          //   body: {
+          //     channelId: channelId
+          //   }
+          // };
+          // socket.send(JSON.stringify(params));
           g_pobo_srv_layer_index = -1;
           if (!audio.paused) {
             audio.pause();
@@ -259,13 +264,14 @@ function stopMeeting() {
     }
   };
   socket.send(JSON.stringify(params));
-  // startHeartbeat();
+  startHeartbeat('REQ_WORKING_FINISH');
   stopService();
 }
 function startServiceTimer() {
   if (!serviceTimer) {
     serviceTimer = setTimeout(function () {
       removeLodingLayer();
+      startHeartbeat('REQ_CALL_ENTRY_FAILURE');
       stopService();
       stopServiceTimer();
     }, serviceTimeout);

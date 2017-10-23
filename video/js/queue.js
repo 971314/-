@@ -284,6 +284,7 @@ function jsoncallback(result) {
     //   var checkVal = $("input[type='checkbox']").is(':checked');
     //   setSrvDNDState(checkVal)
     // })
+    CRVideo_SetDNDStatus(0);//0:代表关闭免打扰， 其它值代表开启免打扰
     if ($('.start_server_open_server').length > 1) {
       $('#one_touch_btn').css('visibility', 'visible');
     }
@@ -397,6 +398,13 @@ CRVideo_StartServiceRslt.callback = function (queID,sdkErr,cookie) {
   //   var status = CRVideo_GetQueueStatus(queID);
   //   updateQue(status);
     popupLodingLayer();
+    var params = {
+      action: 'REQ_ACCEPT_MATCH',
+      body: {
+        channelId: g_current_channel_id
+      }
+    };
+    socket.send(JSON.stringify(params));
     startServiceTimer();
   }
 }
