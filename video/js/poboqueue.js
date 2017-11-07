@@ -17,6 +17,7 @@ function initSocket() {
     //   socket = new SockJS('http://' + videoConf.poboServerAddr + '/sockJS/custService/queue?brokerId=' + videoConf.institution + '&loginName=' + g_user_id);
     // }
     if (socket) {
+      socket.close();
       socket = null;
     }
     socket = new SockJS('http://' + videoConf.poboServerAddr + '/sockJS/custService/queue?brokerId=' + videoConf.institution + '&loginName=' + g_user_id);
@@ -26,9 +27,21 @@ function initSocket() {
     setTimeout(function () {
       if (socket.readyState != 1) {
         removeLoadSrvLayer();
-        popupTipLayer('网络连接超时，请检查网络后重新登录');
+        if (!g_meeting) {
+          popupTipLayer('网络连接超时，请检查网络后重新登录');
+        }
       }
     }, 15000);
+  }
+}
+function uninitSocket() {
+  try {
+    if (socket) {
+      socket.close();
+      socket = null;
+    }
+  } catch (e) {
+    console.error('关闭socket连接失败');
   }
 }
 function startHeartbeat(action) {
@@ -41,7 +54,9 @@ function startHeartbeat(action) {
         };
         socket.send(JSON.stringify(params));
       } else {
-        popupTipLayer('网络连接超时，请检查网络后重新登录');
+        if (!g_meeting) {
+          popupTipLayer('网络连接超时，请检查网络后重新登录');
+        }
       }
     }, heartbeatInterval);
   }
@@ -103,9 +118,11 @@ function loginForPair() {
   };
   socket.onclose = function() {
     // popupTipLayer('网络连接超时，请检查网络后重新登录');
+    $('.start_server_open_server.active').text('请开启服务').removeClass('active');
   };
   socket.onerror = function (e) {
     // popupTipLayer('网络连接超时，请检查网络后重新登录');
+    $('.start_server_open_server.active').text('请开启服务').removeClass('active');
   };
 }
 function logoutForPair() {

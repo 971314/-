@@ -111,12 +111,15 @@ function popupLodingLayer() {
 }
 
 window.onbeforeunload = function () {
+  logoutForPair();
+  uninitSocket();
   CRVideo_Logout();
-  CRVideo_Uninit()
+  CRVideo_Uninit();
 }
 //注销
 function logout() {
   logoutForPair();
+  uninitSocket();
   CRVideo_Logout();
   CRVideo_Uninit();
   g_is_init = false;

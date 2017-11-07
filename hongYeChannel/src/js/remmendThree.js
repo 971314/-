@@ -324,7 +324,7 @@ $(function () {
             $("#root").attr("class",'');
             $("html").css('background-color','#514F4A');
             $("#root").html("<img src='../images/bgweixin.png' width='100%'' style='position:absolute;left:0;top:0'>");
-            $(document).attr("title","App下载");
+            $(document).attr("title",companyName);
             return false;
         }
         return true;

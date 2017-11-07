@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-menu v-if="menuTree.length > 0" :default-active="activeIndex" theme="dark" :router="true" :routerReplace="true" class="navbar navbar-fixed-top" mode="horizontal" @select="handleSelect">
+    <el-menu v-if="menuTree.length > 0" default-active="/" theme="dark" :router="true" :routerReplace="true" class="navbar navbar-fixed-top" mode="horizontal" @select="handleSelect">
       <el-menu-item class="navbar-brand" index="/"><img src="../images/logo.png"><span>澎博后台管理</span></el-menu-item>
       <el-submenu class="navbar-right" index="/">
         <template slot="title">{{ loginName }}</template>
@@ -74,18 +74,18 @@
       },
       setMenu (menuTree) {
         this.menuTree = menuTree;
-        for (let i = 0, len = menuTree.length; i < len; i++) {
-          if (menuTree[i].urlOpenType == 0) {
-            if (menuTree[i].url.indexOf('http') == 0) {
-              window.sessionStorage.setItem('subsystemUrl', menuTree[i].url);
-              this.$router.replace('/subsystem/' + new Date().getTime());
-            } else {
-              this.$router.replace(menuTree[i].url);
-            }
-            this.activeIndex = menuTree[i].url;
-            break;
-          }
-        }
+        // for (let i = 0, len = menuTree.length; i < len; i++) {
+        //   if (menuTree[i].urlOpenType == 0) {
+        //     if (menuTree[i].url.indexOf('http') == 0) {
+        //       window.sessionStorage.setItem('subsystemUrl', menuTree[i].url);
+        //       this.$router.replace('/subsystem/' + new Date().getTime());
+        //     } else {
+        //       this.$router.replace(menuTree[i].url);
+        //     }
+        //     this.activeIndex = menuTree[i].url;
+        //     break;
+        //   }
+        // }
       },
       initSSO (userInfo) {
         let _this = this;
