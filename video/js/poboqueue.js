@@ -102,11 +102,15 @@ function loginForPair() {
         }
         break;
       case 'RSP_USER_DISCONNECT':
+        removePoboSrvLayer();
+        removeLodingLayer();
+        stopService();
+        startHeartbeat('REQ_CALL_ENTRY_FAILURE');
+        break;
       case 'RSP_MATCH_ACCEPTED':
         removePoboSrvLayer();
         removeLodingLayer();
         stopService();
-        // startHeartbeat();
         break;
       case 'RSP_WORKING_FINISH':
       case 'RSP_CALL_ENTRY_FAILURE':
